@@ -49,6 +49,8 @@ namespace Stripe
             var globalSettings = services.AddBillingSettingsServices(Configuration);
             services.Configure<BillingSettings>(Configuration.GetSection("BillingSettings"));
 
+            StripeConfiguration.SetApiKey(globalSettings.StripeApiKey);
+
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
