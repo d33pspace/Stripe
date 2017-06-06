@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Stripe.Data;
 using Stripe.Models;
+using Stripe;
 using Stripe.Services;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +42,13 @@ namespace Stripe
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Options
+            services.AddOptions();
+
+            // Billing Settings
+            var globalSettings = services.AddBillingSettingsServices(Configuration);
+            services.Configure<BillingSettings>(Configuration.GetSection("BillingSettings"));
+
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
