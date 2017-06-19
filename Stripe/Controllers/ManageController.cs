@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -370,4 +371,178 @@ namespace Stripe.Controllers
 
         #endregion
     }
+
+    #region ViewModels
+
+    public class CancelSubscriptionViewModel
+    {
+        public int Id { get; set; }
+
+        [Required]
+        [Display(Name = "Reason why you want to cancel")]
+        public string Reason { get; set; }
+    }
+
+    public class CreditCardViewModel
+    {
+        public CreditCard CreditCard { get; set; }
+    }
+
+    public class ChangeSubscriptionViewModel
+    {
+        public List<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public string CurrentSubscription { get; set; }
+        public string NewPlan { get; set; }
+    }
+
+    public class InvoiceViewModel
+    {
+        public int Id { get; set; }
+        public string StripeId { get; set; }
+        public string StripeCustomerId { get; set; }
+        public DateTime? Date { get; set; }
+        public DateTime? PeriodStart { get; set; }
+        public DateTime? PeriodEnd { get; set; }
+
+        public int? Subtotal { get; set; }
+        public int? Total { get; set; }
+        public bool? Attempted { get; set; }
+        public bool? Closed { get; set; }
+        public bool? Paid { get; set; }
+        public int? AttemptCount { get; set; }
+        public int? AmountDue { get; set; }
+        public int? StartingBalance { get; set; }
+        public int? EndingBalance { get; set; }
+        public DateTime? NextPaymentAttempt { get; set; }
+        public int? Charge { get; set; }
+        public int? Discount { get; set; }
+        public int? ApplicationFee { get; set; }
+        public string CurrencySymbol { get; set; }
+        public string InvoicePeriod { get; set; }
+
+        public int? Tax { get; set; }
+        public decimal? TaxPercent { get; set; }
+
+        public ICollection<LineItem> LineItems { get; set; }
+
+        public class LineItem
+        {
+            public int Id { get; set; }
+            public string StripeLineItemId { get; set; }
+            public string Type { get; set; }
+            public int? Amount { get; set; }
+            public string Currency { get; set; }
+            public bool Proration { get; set; }
+            public Period Period { get; set; }
+            public int? Quantity { get; set; }
+            public Plan Plan { get; set; }
+        }
+
+        public class Period
+        {
+            public DateTime? Start { get; set; }
+            public DateTime? End { get; set; }
+        }
+
+        public class Plan
+        {
+            public string StripePlanId { get; set; }
+            public string Interval { get; set; }
+            public string Name { get; set; }
+            public DateTime? Created { get; set; }
+            public int? AmountInCents { get; set; }
+            public string Currency { get; set; }
+            public int IntervalCount { get; set; }
+            public int? TrialPeriodDays { get; set; }
+            public string StatementDescription { get; set; }
+        }
+    }
+
+    #endregion
+
+    #region Stripe to SaasEcom Mapper
+
+    public static class Mapper
+    {
+        public static Invoice Map(StripeInvoice stripeInvoice)
+        {
+            var invoice = new Invoice
+            {
+                AmountDue = stripeInvoice.AmountDue,
+                ApplicationFee = stripeInvoice.ApplicationFee,
+                AttemptCount = stripeInvoice.AttemptCount,
+                Attempted = stripeInvoice.Attempted,
+                Closed = stripeInvoice.Closed,
+                Currency = stripeInvoice.Currency,
+                Date = stripeInvoice.Date,
+                Description = stripeInvoice.Description,
+                // Discount = Map(stripeInvoice.StripeDiscount),
+                EndingBalance = stripeInvoice.EndingBalance,
+                Forgiven = stripeInvoice.Forgiven,
+                NextPaymentAttempt = stripeInvoice.NextPaymentAttempt,
+                Paid = stripeInvoice.Paid,
+                PeriodStart = stripeInvoice.PeriodStart,
+                PeriodEnd = stripeInvoice.PeriodEnd,
+                ReceiptNumber = stripeInvoice.ReceiptNumber,
+                StartingBalance = stripeInvoice.StartingBalance,
+                StripeCustomerId = stripeInvoice.CustomerId,
+                StatementDescriptor = stripeInvoice.StatementDescriptor,
+                Tax = stripeInvoice.Tax,
+                TaxPercent = stripeInvoice.TaxPercent,
+                StripeId = stripeInvoice.Id,
+                Subtotal = stripeInvoice.Subtotal,
+                Total = stripeInvoice.Total,
+                LineItems = Map(stripeInvoice.StripeInvoiceLineItems.Data)
+            };
+
+            return invoice;
+        }
+
+        private static ICollection<Invoice.LineItem> Map(IEnumerable<StripeInvoiceLineItem> list)
+        {
+            if (list == null)
+                return null;
+
+            return list.Select(i => new Invoice.LineItem
+            {
+                Amount = i.Amount,
+                Currency = i.Currency,
+                Period = Map(i.StripePeriod),
+                Plan = Map(i.Plan),
+                Proration = i.Proration,
+                Quantity = i.Quantity,
+                StripeLineItemId = i.Id,
+                Type = i.Type
+            }).ToList();
+        }
+
+        private static Invoice.Plan Map(StripePlan stripePlan)
+        {
+            return new Invoice.Plan
+            {
+                AmountInCents = stripePlan.Amount,
+                Created = stripePlan.Created,
+                Currency = stripePlan.Currency,
+                StatementDescriptor = stripePlan.StatementDescriptor,
+                Interval = stripePlan.Interval,
+                IntervalCount = stripePlan.IntervalCount,
+                Name = stripePlan.Name,
+                //StripePlanId = stripePlan.Id,
+                TrialPeriodDays = stripePlan.TrialPeriodDays
+            };
+        }
+
+        private static Invoice.Period Map(StripePeriod stripePeriod)
+        {
+            if (stripePeriod == null)
+                return null;
+
+            return new Invoice.Period
+            {
+                Start = stripePeriod.Start,
+                End = stripePeriod.End
+            };
+        }
+    }
+    #endregion
 }

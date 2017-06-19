@@ -42,7 +42,7 @@ namespace Stripe.Models
 
         public string CardCountry { get; set; }
 
-        public string SaasEcomUserId { get; set; }
+        public string UserId { get; set; }
 
         public void ClearCreditCardDetails()
         {
