@@ -19,6 +19,6 @@ namespace Stripe.Models
         [Display(Name = "Test secret API Key")]
         public string StripeTestSecretApiKey { get; set; }
 
-        public virtual ApplicationUser SaasEcomUser { get; set; }
+        public virtual ApplicationUser User { get; set; }
     }
 }
