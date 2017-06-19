@@ -88,6 +88,8 @@ namespace Stripe.Models
 
         public class Period
         {
+            public int Id { get; set; }
+
             public DateTime? Start { get; set; }
 
             public DateTime? End { get; set; }
@@ -95,7 +97,7 @@ namespace Stripe.Models
 
         public class Plan
         {
-            public string StripePlanId { get; set; }
+            public int Id { get; set; }
 
             public string Interval { get; set; }
 
