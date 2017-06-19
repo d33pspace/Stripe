@@ -61,7 +61,7 @@ namespace Stripe
 
             services.AddMvc(options =>
             {
-                options.Filters.Add(new RequireHttpsAttribute());
+                //options.Filters.Add(new RequireHttpsAttribute());
             });
 
             // Add application services.
