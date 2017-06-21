@@ -230,7 +230,8 @@ namespace Stripe.Controllers
 
         public async Task<ViewResult> Invoice(int id)
         {
-            var invoice = await InvoiceDataService.UserInvoiceAsync(User.Identity., id);
+            var user = GetCurrentUserAsync();
+            var invoice = await InvoiceDataService.UserInvoiceAsync(user.Id, id);
             return View(invoice);
         }
 
