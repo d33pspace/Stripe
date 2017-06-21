@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stripe;
+using Stripe.Models;
 
 namespace Stripe.Data
 {
-    /// <summary>
-    /// Subscription Plan Provider
-    /// </summary>
     public class SubscriptionPlanProvider : ISubscriptionPlanProvider
     {
         private readonly string _apiKey;
@@ -18,20 +16,11 @@ namespace Stripe.Data
             get { return _planService ?? (_planService = new StripePlanService(_apiKey)); }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionPlanProvider"/> class.
-        /// </summary>
-        /// <param name="apiKey">The API key.</param>
         public SubscriptionPlanProvider(string apiKey)
         {
             _apiKey = apiKey;
         }
 
-        /// <summary>
-        /// Adds the specified plan.
-        /// </summary>
-        /// <param name="plan">The plan.</param>
-        /// <returns></returns>
         public object Add(SubscriptionPlan plan)
         {
             var result = PlanService.Create(new StripePlanCreateOptions
@@ -42,17 +31,12 @@ namespace Stripe.Data
                 Currency = plan.Currency,
                 Interval = GetInterval(plan.Interval),
                 TrialPeriodDays = plan.TrialPeriodInDays,
-                IntervalCount = 1, // The number of intervals (specified in the interval property) between each subscription billing. For example, interval=month and interval_count=3 bills every 3 months.
+                IntervalCount = 1,                       
             });
 
             return result;
         }
 
-        /// <summary>
-        /// Updates the specified plan.
-        /// </summary>
-        /// <param name="plan">The plan.</param>
-        /// <returns></returns>
         public object Update(SubscriptionPlan plan)
         {
             var res = PlanService.Update(plan.Id, new StripePlanUpdateOptions
@@ -63,20 +47,11 @@ namespace Stripe.Data
             return res;
         }
 
-        /// <summary>
-        /// Deletes the specified plan identifier.
-        /// </summary>
-        /// <param name="planId">The plan identifier.</param>
         public void Delete(string planId)
         {
             PlanService.Delete(planId);
         }
 
-        /// <summary>
-        /// Finds the subscription plan by Id asynchronous.
-        /// </summary>
-        /// <param name="planId">The plan identifier.</param>
-        /// <returns>Stripe plan</returns>
         public SubscriptionPlan FindAsync(string planId)
         {
             try
@@ -91,11 +66,6 @@ namespace Stripe.Data
             }
         }
 
-        /// <summary>
-        /// Gets all subscription plans asynchronous.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <returns></returns>
         public IEnumerable<SubscriptionPlan> GetAllAsync(object options)
         {
             var result = PlanService.List((StripeListOptions)options);

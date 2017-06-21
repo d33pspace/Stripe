@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Stripe.Data;
 using Stripe.Models;
 
 namespace Stripe.Services
 {
     public class CardDataService<TContext, TUser> : ICardDataService
-        where TContext : IDbContext<TUser>
+        where TContext : ApplicationDbContext
         where TUser : ApplicationUser
     {
         private readonly TContext _dbContext;
@@ -36,17 +37,17 @@ namespace Stripe.Services
             if (noTracking)
             {
                 return await this._dbContext.CreditCards.AsNoTracking()
-                    .FirstOrDefaultAsync(c => c.SaasEcomUserId == userId && c.Id == cardId);
+                    .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == cardId);
             }
 
             return await this._dbContext.CreditCards
-                .FirstOrDefaultAsync(c => c.SaasEcomUserId == userId && c.Id == cardId);
+                .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == cardId);
         }
 
         public async Task<bool> AnyAsync(int? cardId, string userId)
         {
             return await this._dbContext.CreditCards
-                .AnyAsync(c => c.SaasEcomUserId == userId && c.Id == cardId);
+                .AnyAsync(c => c.UserId == userId && c.Id == cardId);
         }
 
         public async Task AddAsync(CreditCard creditCard)
@@ -57,7 +58,7 @@ namespace Stripe.Services
 
         public async Task AddOrUpdateDefaultCardAsync(string userId, CreditCard creditCard)
         {
-            var card = this._dbContext.CreditCards.FirstOrDefault(c => c.SaasEcomUserId == userId);
+            var card = this._dbContext.CreditCards.FirstOrDefault(c => c.UserId == userId);
 
             if (card != null)
             {
@@ -70,7 +71,7 @@ namespace Stripe.Services
 
         public async Task UpdateAsync(string userId, CreditCard creditCard)
         {
-            if (!this._dbContext.CreditCards.Any(c => c.SaasEcomUserId == userId && c.Id == creditCard.Id))
+            if (!this._dbContext.CreditCards.Any(c => c.UserId == userId && c.Id == creditCard.Id))
             {
                 throw new ArgumentException("cardId");
             }
@@ -82,7 +83,7 @@ namespace Stripe.Services
         public async Task DeleteAsync(string userId, int cardId)
         {
             CreditCard creditcard = await this._dbContext.CreditCards
-                .FirstOrDefaultAsync(c => c.SaasEcomUserId == userId && c.Id == cardId);
+                .FirstOrDefaultAsync(c => c.UserId == userId && c.Id == cardId);
 
             if (creditcard == null)
             {

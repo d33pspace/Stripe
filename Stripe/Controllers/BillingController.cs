@@ -18,12 +18,14 @@ namespace Stripe.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ICardProvider cardProvider,
-            SubscriptionsFacade subscriptionsFacade)
+            SubscriptionsFacade subscriptionsFacade,
+            InvoiceDataService<ApplicationDbContext, ApplicationUser> invoiceDataService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _cardProvider = cardProvider;
             _subscriptionsFacade = subscriptionsFacade;
+            _invoiceDataService = invoiceDataService;
         }
 
         private Task<ApplicationUser> GetCurrentUserAsync()
@@ -35,6 +37,7 @@ namespace Stripe.Controllers
         private SignInManager<ApplicationUser> _signInManager;
         private readonly ICardProvider _cardProvider;
         private readonly SubscriptionsFacade _subscriptionsFacade;
+        private readonly InvoiceDataService<ApplicationDbContext, ApplicationUser> _invoiceDataService;
 
 
         public async Task<ViewResult> Index()
@@ -42,7 +45,7 @@ namespace Stripe.Controllers
             var user = await GetCurrentUserAsync();
             ViewBag.Subscriptions = await _subscriptionsFacade.UserActiveSubscriptionsAsync(user.Id);
             ViewBag.PaymentDetails = await _subscriptionsFacade.DefaultCreditCard(user.Id);
-            ViewBag.Invoices = await InvoiceDataService.UserInvoicesAsync(user.Id);
+            //ViewBag.Invoices = await InvoiceDataService.UserInvoicesAsync(user.Id);
 
             return View();
         }
@@ -54,7 +57,7 @@ namespace Stripe.Controllers
 
             var model = new ChangeSubscriptionViewModel
             {
-                SubscriptionPlans = await SubscriptionPlansFacade.GetAllAsync(),
+                //SubscriptionPlans = await SubscriptionPlansFacade.GetAllAsync(),
                 CurrentSubscription = currentSubscription != null ? currentSubscription.SubscriptionPlan.Id : string.Empty
             };
 
@@ -97,7 +100,7 @@ namespace Stripe.Controllers
 
                 DateTime? endDate; // Because we are passing CancelAtTheEndOfPeriod to EndSubscription, we get the date when the subscription will be cancelled
                 if (currentSubscription != null &&
-                    (endDate = await SubscriptionsFacade.EndSubscriptionAsync(currentSubscription.Id, user, true, model.Reason)) != null)
+                    (endDate = await _subscriptionsFacade.EndSubscriptionAsync(currentSubscription.Id, user, true, model.Reason)) != null)
                 {
                     // TempData.Add("flash", new FlashSuccessViewModel("Your subscription has been cancelled."));
                 }
@@ -119,7 +122,7 @@ namespace Stripe.Controllers
             var currentSubscription = (await _subscriptionsFacade.UserActiveSubscriptionsAsync(user.Id)).FirstOrDefault();
 
             if (currentSubscription != null &&
-                await SubscriptionsFacade.UpdateSubscriptionAsync(user.Id, user.StripeCustomerId, currentSubscription.SubscriptionPlanId))
+                await _subscriptionsFacade.UpdateSubscriptionAsync(user.Id, user.StripeCustomerId, currentSubscription.SubscriptionPlanId))
             {
                 // TempData.Add("flash", new FlashSuccessViewModel("Your subscription plan has been re-activated."));
             }
@@ -149,7 +152,7 @@ namespace Stripe.Controllers
 
                 if (user != null)
                 {
-                    await _subscriptionsFacade.SubscribeUserAsync();
+                   // await _subscriptionsFacade.SubscribeUserAsync();
                 }
 
                 await _cardProvider.AddAsync(user, model.CreditCard);
@@ -168,7 +171,7 @@ namespace Stripe.Controllers
 
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return null;
             }
 
             var model = new CreditCardViewModel
@@ -176,10 +179,11 @@ namespace Stripe.Controllers
                 CreditCard = await _cardProvider.FindAsync(user.Id, id)
             };
 
+            // TODO: Substitute null
             // If the card doesn't exist or doesn't belong the logged in user
             if (model.CreditCard == null || model.CreditCard.UserId != user.Id)
             {
-                return HttpNotFound();
+                return null;
             }
             model.CreditCard.ClearCreditCardDetails();
 
@@ -231,7 +235,8 @@ namespace Stripe.Controllers
         public async Task<ViewResult> Invoice(int id)
         {
             var user = GetCurrentUserAsync();
-            var invoice = await InvoiceDataService.UserInvoiceAsync(user.Id, id);
+            // TODO: Fix this 
+            var invoice = await _invoiceDataService.UserInvoiceAsync(user.Id.ToString(), id);
             return View(invoice);
         }
 

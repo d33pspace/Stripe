@@ -67,6 +67,17 @@ namespace Stripe
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            var serviceProvider = services.BuildServiceProvider();
+            var dbContext = serviceProvider.GetService<ApplicationDbContext>();
+
+            services.AddSingleton<ICardDataService>(new CardDataService<ApplicationDbContext, ApplicationUser>(dbContext));
+            services.AddSingleton<IInvoiceDataService>(new InvoiceDataService<ApplicationDbContext, ApplicationUser>(dbContext));
+            services.AddSingleton<ISubscriptionDataService>(new SubscriptionDataService<ApplicationDbContext, ApplicationUser>(dbContext));
+            services.AddSingleton<ISubscriptionPlanDataService>(new SubscriptionPlanDataService<ApplicationDbContext, ApplicationUser>(dbContext));
+
+            //ICardProvider
+            //SubscriptionPlanProvider : ISubscriptionPlanProvider
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

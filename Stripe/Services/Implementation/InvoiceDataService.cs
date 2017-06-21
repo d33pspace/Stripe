@@ -9,7 +9,7 @@ using Stripe.Services;
 namespace Stripe.Services
 {
     public class InvoiceDataService<TContext, TUser> : IInvoiceDataService
-        where TContext : IDbContext<TUser>
+        where TContext : ApplicationDbContext
         where TUser : ApplicationUser
     {
         private readonly TContext _dbContext;

@@ -209,13 +209,13 @@ namespace Stripe.Data
             {
                 var stripeUser = (StripeCustomer)await _customerProvider.CreateCustomerAsync(user, cardToken: card.StripeToken);
                 user.StripeCustomerId = stripeUser.Id;
-                card.SaasEcomUserId = user.Id;
+                card.UserId = user.Id;
                 await _cardDataService.AddAsync(card);
             }
             else if (!string.IsNullOrEmpty(card?.StripeToken))
             {
                 var customer = (StripeCustomer)_customerProvider.UpdateCustomer(user, card);
-                card.SaasEcomUserId = user.Id;
+                card.UserId = user.Id;
                 card.StripeId = customer.DefaultSourceId;
                 await _cardDataService.AddOrUpdateDefaultCardAsync(user.Id, card);
             }
@@ -272,8 +272,8 @@ namespace Stripe.Data
 
         private string GetStripeSubscriptionIdForNewCustomer(StripeCustomer stripeUser)
         {
-            return stripeUser.StripeSubscriptionList.TotalCount > 0 ? 
-                stripeUser.StripeSubscriptionList.Data.First().Id : null;
+            return stripeUser.Subscriptions.TotalCount > 0 ? 
+                stripeUser.Subscriptions.Data.First().Id : null;
         }
         #endregion
     }

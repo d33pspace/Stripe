@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Stripe.Data;
 using Stripe.Models;
 using Stripe.Services;
 
 namespace Stripe.Services
 {
     public class SubscriptionDataService<TContext, TUser> : ISubscriptionDataService
-        where TContext : IDbContext<TUser>
+        where TContext : ApplicationDbContext
         where TUser : class
     {
         private readonly TContext _dbContext;
@@ -95,7 +96,6 @@ namespace Stripe.Services
             return await _dbContext.Subscriptions
                 .Where(s => s.User.Id == userId && s.Status != "canceled" && s.Status != "unpaid")
                 .Where(s => s.End == null || s.End > DateTime.UtcNow)
-                .Include(s => s.SubscriptionPlan.Properties)
                 .Select(s => s).ToListAsync();
         }
 
