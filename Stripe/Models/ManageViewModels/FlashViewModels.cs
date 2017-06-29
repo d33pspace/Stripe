@@ -1,4 +1,4 @@
-namespace MyNotes.Views.SaasEcom.ViewModels
+namespace Stripe.Models
 {
     public abstract class FlashViewModel
     {

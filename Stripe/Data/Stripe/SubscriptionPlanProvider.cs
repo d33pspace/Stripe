@@ -16,9 +16,9 @@ namespace Stripe.Data
             get { return _planService ?? (_planService = new StripePlanService(_apiKey)); }
         }
 
-        public SubscriptionPlanProvider(string apiKey)
+        public SubscriptionPlanProvider()
         {
-            _apiKey = apiKey;
+            _apiKey = "pk_test_W9r8jIofygDYmsy7gUcjrVEG";
         }
 
         public object Add(SubscriptionPlan plan)

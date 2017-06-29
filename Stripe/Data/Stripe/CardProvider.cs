@@ -11,10 +11,10 @@ namespace Stripe.Data
         private readonly ICardDataService _cardDataService;
         private readonly StripeCardService _cardService;
 
-        public CardProvider(string apiKey, ICardDataService cardDataService)
+        public CardProvider(ICardDataService cardDataService)
         {
             this._cardDataService = cardDataService;
-            this._cardService = new StripeCardService(apiKey);
+            this._cardService = new StripeCardService("pk_test_W9r8jIofygDYmsy7gUcjrVEG");
         }
 
         public async Task<IList<CreditCard>> GetAllAsync(string customerId)

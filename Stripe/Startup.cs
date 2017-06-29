@@ -82,6 +82,8 @@ namespace Stripe
             services.AddTransient<ICustomerProvider, CustomerProvider>();
             services.AddTransient<ISubscriptionPlanProvider, SubscriptionPlanProvider>();
             services.AddTransient<ISubscriptionProvider, SubscriptionProvider>();
+
+            services.AddScoped<SubscriptionsFacade>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

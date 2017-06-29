@@ -9,9 +9,9 @@ namespace Stripe.Data
     {
         private readonly StripeCustomerService _customerService;
 
-        public CustomerProvider(string apiKey)
+        public CustomerProvider()
         {
-            _customerService = new StripeCustomerService(apiKey);
+            _customerService = new StripeCustomerService("pk_test_W9r8jIofygDYmsy7gUcjrVEG");
         }
 
         public async Task<object> CreateCustomerAsync(ApplicationUser user, string planId = null, DateTime? trialEnd = null, string cardToken = null)
