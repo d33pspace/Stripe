@@ -76,8 +76,12 @@ namespace Stripe
             services.AddSingleton<ISubscriptionDataService>(new SubscriptionDataService<ApplicationDbContext, ApplicationUser>(dbContext));
             services.AddSingleton<ISubscriptionPlanDataService>(new SubscriptionPlanDataService<ApplicationDbContext, ApplicationUser>(dbContext));
 
-            //ICardProvider
-            //SubscriptionPlanProvider : ISubscriptionPlanProvider
+            // Stripe services
+            services.AddTransient<ICardProvider, CardProvider>();
+            services.AddTransient<IChargeProvider, ChargeProvider>();
+            services.AddTransient<ICustomerProvider, CustomerProvider>();
+            services.AddTransient<ISubscriptionPlanProvider, SubscriptionPlanProvider>();
+            services.AddTransient<ISubscriptionProvider, SubscriptionProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
