@@ -73,25 +73,25 @@ namespace Stripe.Data
             return result.Select(SubscriptionPlanMapper);
         }
         
-        private static string GetInterval(SubscriptionPlan.SubscriptionInterval interval)
+        private static string GetInterval(SubscriptionInterval interval)
         {
             string result = null;
 
             switch (interval)
             {
-                case (SubscriptionPlan.SubscriptionInterval.Monthly):
+                case SubscriptionInterval.Monthly:
                     result = "month";
                     break;
-                case (SubscriptionPlan.SubscriptionInterval.Yearly):
+                case SubscriptionInterval.Yearly:
                     result = "year";
                     break;
-                case (SubscriptionPlan.SubscriptionInterval.Weekly):
+                case SubscriptionInterval.Weekly:
                     result = "week";
                     break;
-                case (SubscriptionPlan.SubscriptionInterval.EveryThreeMonths):
+                case SubscriptionInterval.EveryThreeMonths:
                     result = "3-month";
                     break;
-                case (SubscriptionPlan.SubscriptionInterval.EverySixMonths):
+                case SubscriptionInterval.EverySixMonths:
                     result = "6-month";
                     break;
             }
@@ -99,20 +99,20 @@ namespace Stripe.Data
             return result;
         }
 
-        private static SubscriptionPlan.SubscriptionInterval GetInterval(string interval)
+        private static SubscriptionInterval GetInterval(string interval)
         {
             switch (interval)
             {
-                case ("month"):
-                    return SubscriptionPlan.SubscriptionInterval.Monthly;
-                case ("year"):
-                    return SubscriptionPlan.SubscriptionInterval.Yearly;
-                case ("week"):
-                    return SubscriptionPlan.SubscriptionInterval.Weekly;
-                case ("3-month"):
-                    return SubscriptionPlan.SubscriptionInterval.EveryThreeMonths;
-                case ("6-month"):
-                    return SubscriptionPlan.SubscriptionInterval.EverySixMonths;
+                case "month":
+                    return SubscriptionInterval.Monthly;
+                case "year":
+                    return SubscriptionInterval.Yearly;
+                case "week":
+                    return SubscriptionInterval.Weekly;
+                case "3-month":
+                    return SubscriptionInterval.EveryThreeMonths;
+                case "6-month":
+                    return SubscriptionInterval.EverySixMonths;
             }
 
             return 0;

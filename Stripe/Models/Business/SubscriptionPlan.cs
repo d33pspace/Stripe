@@ -34,13 +34,15 @@ namespace Stripe.Models
 
         public bool Disabled { get; set; }
 
-        public enum SubscriptionInterval
-        {
-            Monthly = 1,
-            Yearly = 2,
-            Weekly = 3,
-            EverySixMonths = 4,
-            EveryThreeMonths = 5
-        }
+        
+    }
+
+    public enum SubscriptionInterval
+    {
+        Monthly = 1,
+        Yearly = 2,
+        Weekly = 3,
+        EverySixMonths = 4,
+        EveryThreeMonths = 5
     }
 }
