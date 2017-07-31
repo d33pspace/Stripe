@@ -82,6 +82,7 @@ namespace Stripe
             services.AddTransient<ICustomerProvider, CustomerProvider>();
             services.AddTransient<ISubscriptionPlanProvider, SubscriptionPlanProvider>();
             services.AddTransient<ISubscriptionProvider, SubscriptionProvider>();
+            services.AddTransient<IBillingCycle, BillingCycle>();
 
             services.AddScoped<SubscriptionsFacade>();
         }

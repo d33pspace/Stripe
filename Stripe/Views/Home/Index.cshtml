@@ -1,21 +1,39 @@
-﻿@{
+﻿@model Donation
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Stripe.Data
+@{
     ViewData["Title"] = "Home";
 }
+
+@inject IBillingCycle BillingCycle
+
 <h2>@ViewData["Title"].</h2>
 <h3>@ViewData["Message"]</h3>
 
 <p><b>Step 1:</b></p>
 
-<p>I would like to make a [ drop-down menu: monthly | quarterly | annual | one-off ] gift of:</p>
+<form asp-controller="Home" asp-action="Create">
+    <p>I would like to make a </p>
 
-<p>
-    [ ] $18 to provide one day of showers, laundry and care for five people.<br />
-    [ ] $63 to provide a week of shelter and training for one person.<br />
-    [ ] $200 towards shower renovations or the purchase of a new van.<br />
-    $ [ _____ ] to help as many people as possible today!
-</p>
+    <select asp-for="CycleId"
+            asp-items="@(new SelectList(Model.DonationCycles, "Value", "Text"))">
+        <option>Please select one</option>
+    </select>
 
-<p>[ Submit ]</p>
+    [ drop-down menu: monthly | quarterly | annual | one-off ] gift of:</p>
+
+        <p>
+            [ ] $18 to provide one day of showers, laundry and care for five people.<br />
+            [ ] $63 to provide a week of shelter and training for one person.<br />
+            [ ] $200 towards shower renovations or the purchase of a new van.<br />
+            $ [ _____ ] to help as many people as possible today!
+        </p>
+
+    <p>[ Submit ]</p>
+
+    <input type="submit" value="Submit" />
+</form>
+
 
 <p><b>Step 2:</b></p>
 

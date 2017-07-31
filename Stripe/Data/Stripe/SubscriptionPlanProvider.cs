@@ -132,4 +132,18 @@ namespace Stripe.Data
             };
         }
     }
+
+
+    public class BillingCycle : IBillingCycle
+    {
+        public List<KeyValuePair<SubscriptionInterval, string>> GetCycles()
+        {
+            return EnumInfo<SubscriptionInterval>.GetValues();
+        }
+    }
+
+    public interface IBillingCycle
+    {
+        List<KeyValuePair<SubscriptionInterval, string>> GetCycles();
+    }
 }
