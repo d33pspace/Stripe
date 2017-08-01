@@ -26,7 +26,7 @@ namespace Stripe.Models
         public string Currency { get; set; }
 
         [Required]
-        public SubscriptionInterval Interval { get; set; }
+        public PaymentCycle Interval { get; set; }
 
         [Display(Name = "Trial period in days")]
         [Range(0, 365)]
@@ -35,14 +35,5 @@ namespace Stripe.Models
         public bool Disabled { get; set; }
 
         
-    }
-
-    public enum SubscriptionInterval
-    {
-        Monthly = 1,
-        Yearly = 2,
-        Weekly = 3,
-        EverySixMonths = 4,
-        EveryThreeMonths = 5
     }
 }

@@ -73,46 +73,41 @@ namespace Stripe.Data
             return result.Select(SubscriptionPlanMapper);
         }
         
-        private static string GetInterval(SubscriptionInterval interval)
+        private static string GetInterval(PaymentCycle interval)
         {
             string result = null;
 
             switch (interval)
             {
-                case SubscriptionInterval.Monthly:
+                case PaymentCycle.Monthly:
                     result = "month";
                     break;
-                case SubscriptionInterval.Yearly:
+                case PaymentCycle.Annualy:
                     result = "year";
                     break;
-                case SubscriptionInterval.Weekly:
-                    result = "week";
+                case PaymentCycle.Quarterly:
+                    result = "quarter";
                     break;
-                case SubscriptionInterval.EveryThreeMonths:
-                    result = "3-month";
-                    break;
-                case SubscriptionInterval.EverySixMonths:
-                    result = "6-month";
+                case PaymentCycle.OneOff:
+                    result = "oneoff";
                     break;
             }
 
             return result;
         }
 
-        private static SubscriptionInterval GetInterval(string interval)
+        private static PaymentCycle GetInterval(string interval)
         {
             switch (interval)
             {
                 case "month":
-                    return SubscriptionInterval.Monthly;
+                    return PaymentCycle.Monthly;
                 case "year":
-                    return SubscriptionInterval.Yearly;
-                case "week":
-                    return SubscriptionInterval.Weekly;
-                case "3-month":
-                    return SubscriptionInterval.EveryThreeMonths;
-                case "6-month":
-                    return SubscriptionInterval.EverySixMonths;
+                    return PaymentCycle.Annualy;
+                case "quarter":
+                    return PaymentCycle.Quarterly;
+                case "oneoff":
+                    return PaymentCycle.OneOff;
             }
 
             return 0;
@@ -136,14 +131,14 @@ namespace Stripe.Data
 
     public class BillingCycle : IBillingCycle
     {
-        public List<KeyValuePair<SubscriptionInterval, string>> GetCycles()
+        public List<KeyValuePair<PaymentCycle, string>> GetCycles()
         {
-            return EnumInfo<SubscriptionInterval>.GetValues();
+            return EnumInfo<PaymentCycle>.GetValues();
         }
     }
 
     public interface IBillingCycle
     {
-        List<KeyValuePair<SubscriptionInterval, string>> GetCycles();
+        List<KeyValuePair<PaymentCycle, string>> GetCycles();
     }
 }
