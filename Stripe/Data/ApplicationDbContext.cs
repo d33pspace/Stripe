@@ -23,6 +23,8 @@ namespace Stripe.Data
             // Add your customizations after calling base.OnModelCreating(builder);
         }
 
+        public DbSet<Donation> Donations { get; set; }
+
         public DbSet<Subscription> Subscriptions { get; set; }
 
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }

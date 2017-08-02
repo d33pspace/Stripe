@@ -18,19 +18,17 @@ namespace Stripe.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ICardProvider cardProvider,
-            SubscriptionsFacade subscriptionsFacade,
-            InvoiceDataService<ApplicationDbContext, ApplicationUser> invoiceDataService)
+            SubscriptionsFacade subscriptionsFacade)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _cardProvider = cardProvider;
             _subscriptionsFacade = subscriptionsFacade;
-            _invoiceDataService = invoiceDataService;
         }
 
         private Task<ApplicationUser> GetCurrentUserAsync()
         {
-            return _userManager.GetUserAsync(HttpContext.User);
+            return _userManager.GetUserAsync(User);
         }
 
         private readonly UserManager<ApplicationUser> _userManager;
@@ -40,7 +38,7 @@ namespace Stripe.Controllers
         private readonly InvoiceDataService<ApplicationDbContext, ApplicationUser> _invoiceDataService;
 
 
-        public async Task<ViewResult> Index()
+        public async Task<ViewResult> Index(int? id)
         {
             var user = await GetCurrentUserAsync();
             ViewBag.Subscriptions = await _subscriptionsFacade.UserActiveSubscriptionsAsync(user.Id);

@@ -45,6 +45,10 @@ namespace Stripe
             // Options
             services.AddOptions();
 
+            // Session cache
+            services.AddDistributedMemoryCache();
+            services.AddSession();
+
             // Billing Settings
             var globalSettings = services.AddBillingSettingsServices(Configuration);
             services.Configure<BillingSettings>(Configuration.GetSection("BillingSettings"));
@@ -95,6 +99,8 @@ namespace Stripe
 
             var options = new RewriteOptions()
                 .AddRedirectToHttps();
+
+            app.UseSession();
 
             if (env.IsDevelopment())
             {

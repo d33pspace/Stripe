@@ -1,7 +1,7 @@
-@model Stripe.Models.CreditCardViewModel
+@using Stripe.Controllers
+@model Stripe.Controllers.CreditCardViewModel
 @{
     ViewBag.Title = "Add credit card";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 <h3><i class="fa fa-credit-card"></i> Add credit card</h3>
 <hr />
@@ -15,6 +15,6 @@
 </div>
 @section Scripts {
     <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
-    @Scripts.Render("~/bundles/jqueryval")
-    <script src="~/Scripts/saasecom.card.form.js"></script>
+    
+    <script src="~/Scripts/card.form.js"></script>
 }

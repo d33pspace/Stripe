@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using System;
 
 namespace Stripe.Models
 {
@@ -12,11 +10,6 @@ namespace Stripe.Models
 
         public double DonationAmount { get; set; }
 
-        public List<SelectListItem> DonationCycles { get; set; }
-
-        public Donation()
-        {
-            DonationCycles = new List<SelectListItem>();
-        }
+        public string UserId { get; set; }
     }
 }

@@ -1,10 +1,10 @@
-﻿@model IEnumerable<Models.Models.Subscription>
+﻿@model IEnumerable<Subscription>
 @if (Model != null && Model.Any())
 {
     foreach (var item in Model)
     {
         <div>
-            <h3>@Html.DisplayFor(modelItem => item.SubscriptionPlan.Name) - @item.SubscriptionPlan.CurrencyDetails.CurrencySymbol@item.SubscriptionPlan.Price / @item.SubscriptionPlan.Interval</h3>
+            <h3>@Html.DisplayFor(modelItem => item.SubscriptionPlan.Name) - @item.SubscriptionPlan.Currency @item.SubscriptionPlan.Price / @item.SubscriptionPlan.Interval</h3>
 
             @if (item.IsTrialing() && item.End == null)
             {
