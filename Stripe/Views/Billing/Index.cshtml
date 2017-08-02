@@ -1,0 +1,15 @@
+@model Donation
+
+@{
+    ViewData["Title"] = "Index";
+}
+@inject IBillingService BillingService
+
+<h2>Billing</h2>
+<br />
+
+@Html.Partial("_Subscriptions", BillingService.GetSubScriptions(Model.UserId))
+<br />
+@Html.Partial("_PaymentDetails", BillingService.GetPaymentDetails(Model.UserId))
+
+

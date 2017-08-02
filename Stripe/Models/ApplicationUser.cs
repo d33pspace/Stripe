@@ -19,5 +19,8 @@ namespace Stripe.Models
         public virtual ICollection<Subscription> Subscriptions { get; set; }
 
         public virtual IList<CreditCard> CreditCards { get; set; }
+
+        public virtual IList<Donation> Donations { get; set; }
+        
     }
 }

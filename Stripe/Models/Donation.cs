@@ -11,5 +11,9 @@ namespace Stripe.Models
         public double DonationAmount { get; set; }
 
         public string UserId { get; set; }
+
+        public virtual ApplicationUser User { get; set; }
+
+        public DateTime? TransactionDate { get; set; }
     }
 }

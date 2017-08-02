@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -13,11 +14,13 @@ namespace Stripe.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IBillingService _billingService;
         const string SessionKey = "sessionKey";
 
-        public HomeController(IBillingService billingService)
+        public HomeController(UserManager<ApplicationUser> userManager, IBillingService billingService)
         {
+            _userManager = userManager;
             _billingService = billingService;
         }
 
@@ -46,8 +49,7 @@ namespace Stripe.Controllers
                 if (!string.IsNullOrEmpty(value))
                 {
                     var model = JsonConvert.DeserializeObject<Donation>(value);
-//                    _dbContext.Donations.Add(model);
-//                    _dbContext.SaveChanges();
+                    _billingService.Add(model);
                     return RedirectToAction("Index", "Billing", new { Id = model.Id });
                 }
             }
@@ -56,8 +58,9 @@ namespace Stripe.Controllers
 
 
         [HttpPost]
-        public IActionResult Create(DonationViewModel donation)
+        public async Task<IActionResult> Create(DonationViewModel donation)
         {
+            // If user is not authenticated, lets save the details on the session cache and we get them after authentication
             if (!User.Identity.IsAuthenticated)
             {
                 var value = HttpContext.Session.GetString(SessionKey);
@@ -69,16 +72,19 @@ namespace Stripe.Controllers
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
             }
 
+            // User is authentication
+            var user = await GetCurrentUserAsync();
             var model = new Donation
             {
                 CycleId = donation.CycleId,
                 DonationAmount = donation.DonationAmount,
-                UserId = User.Identity.Name
+                UserId = user.Id,
+                User = user,
+                TransactionDate = DateTime.Now
             };
-//            _dbContext.Donations.Add(model);
-//            _dbContext.SaveChanges();
+            _billingService.Add(model);
 
-            return RedirectToAction("Index", "Billing", new { Id = 1/*model.Id*/});
+            return RedirectToAction("Index", "Billing", new { Id = model.Id });
         }
 
         public IActionResult About()
@@ -99,5 +105,11 @@ namespace Stripe.Controllers
         {
             return View();
         }
+
+        private Task<ApplicationUser> GetCurrentUserAsync()
+        {
+            return _userManager.GetUserAsync(HttpContext.User);
+        }
     }
+
 }
