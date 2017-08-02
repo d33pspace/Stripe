@@ -14,6 +14,7 @@ namespace Stripe.Controllers
 
         public IActionResult Index(int id)
         {
+            // Get Card types 
             var donation = _billingService.GetById(id);
             return View(donation);
         }
