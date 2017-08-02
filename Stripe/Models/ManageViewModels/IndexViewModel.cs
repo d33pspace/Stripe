@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace Stripe2.Models.ManageViewModels
+namespace Stripe.Models.ManageViewModels
 {
     public class IndexViewModel
     {

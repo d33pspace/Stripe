@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Stripe2.Models.AccountViewModels
+namespace Stripe.Models.AccountViewModels
 {
     public class ForgotPasswordViewModel
     {

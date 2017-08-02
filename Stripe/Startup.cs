@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Stripe2.Data;
-using Stripe2.Models;
-using Stripe2.Services;
+using Stripe.Data;
+using Stripe.Models;
+using Stripe.Services;
 
-namespace Stripe2
+namespace Stripe
 {
     public class Startup
     {
@@ -39,6 +39,10 @@ namespace Stripe2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Session cache
+            services.AddDistributedMemoryCache();
+            services.AddSession();
+
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -52,6 +56,7 @@ namespace Stripe2
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddTransient<IBillingService, BillingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,6 +64,8 @@ namespace Stripe2
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseSession();
 
             if (env.IsDevelopment())
             {

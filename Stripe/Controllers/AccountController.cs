@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Stripe2.Models;
-using Stripe2.Models.AccountViewModels;
-using Stripe2.Services;
+using Stripe.Models;
+using Stripe.Models.AccountViewModels;
+using Stripe.Services;
 
-namespace Stripe2.Controllers
+namespace Stripe.Controllers
 {
     [Authorize]
     public class AccountController : Controller

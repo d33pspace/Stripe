@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Stripe2.Models;
-using Stripe2.Models.ManageViewModels;
-using Stripe2.Services;
+using Stripe.Models;
+using Stripe.Models.ManageViewModels;
+using Stripe.Services;
 
-namespace Stripe2.Controllers
+namespace Stripe.Controllers
 {
     [Authorize]
     public class ManageController : Controller

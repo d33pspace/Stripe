@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Stripe2.Data.Migrations
+namespace Stripe.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

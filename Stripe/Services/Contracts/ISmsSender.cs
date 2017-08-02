@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Stripe2.Services
+namespace Stripe.Services
 {
     public interface ISmsSender
     {
