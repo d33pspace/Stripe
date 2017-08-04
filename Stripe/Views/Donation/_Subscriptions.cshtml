@@ -13,7 +13,7 @@
             @if (item.End == null)
             {
                 <p>
-                    <a href="@Url.Action("CancelSubscription", "Billing", new {id = item.Id})">Cancel Subscription</a> - @Html.ActionLink("Change Plan", "ChangeSubscription", "Billing")
+                    <a href="@Url.Action("CancelSubscription", "Billing", new {id = item.Id})">Cancel Subscription</a> - @Html.ActionLink("Change Plan", "ChangeSubscription", "Donation")
                 </p>
             }
             else

@@ -7,12 +7,12 @@ using Stripe.Services;
 
 namespace Stripe.Controllers
 {
-    public class BillingController : Controller
+    public class DonationController : Controller
     {
         private readonly IDonationService _donationService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public BillingController(
+        public DonationController(
             UserManager<ApplicationUser> userManager, 
             IDonationService donationService)
         {

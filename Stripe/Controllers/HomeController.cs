@@ -54,7 +54,7 @@ namespace Stripe.Controllers
                     model.UserId = user.Id;
 
                     _donationService.Save(model);
-                    return RedirectToAction("Payment", "Billing", new { Id = model.Id });
+                    return RedirectToAction("Payment", "Donation", new { Id = model.Id });
                 }
             }
             return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
@@ -88,7 +88,7 @@ namespace Stripe.Controllers
             };
             _donationService.Save(model);
 
-            return RedirectToAction("Payment", "Billing", new { Id = model.Id });
+            return RedirectToAction("Payment", "Donation", new { Id = model.Id });
         }
 
         public IActionResult About()
