@@ -24,19 +24,14 @@ namespace Stripe.Controllers
             _donationService = donationService;
         }
 
+
+
+
         public IActionResult Index()
         {
-            var donationCycles = _donationService
-                .GetCycles()
-                .Select(b => new SelectListItem
-                {
-                    Value = ((int)b.Key).ToString(),
-                    Text = b.Value
-                }).ToList();
-
             var model = new DonationViewModel
             {
-                DonationCycles = donationCycles
+                DonationCycles = GetDonationCycles
             };
             return View(model);
         }
@@ -64,6 +59,22 @@ namespace Stripe.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(DonationViewModel donation)
         {
+            if (Math.Abs(donation.GetAmount()) < 1)
+            {
+                ModelState.AddModelError("amount", "Donation amount cannot be zero or less");
+            }
+
+            if (donation.CycleId == "Please select one") //Could be better
+            {
+                ModelState.AddModelError("cycle", "Donation cycle is required");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                donation.DonationCycles = GetDonationCycles;
+                return View("Index", donation);
+            }
+
             // If user is not authenticated, lets save the details on the session cache and we get them after authentication
             if (!User.Identity.IsAuthenticated)
             {
@@ -109,6 +120,14 @@ namespace Stripe.Controllers
         {
             return View();
         }
+
+        private List<SelectListItem> GetDonationCycles => _donationService
+            .GetCycles()
+            .Select(b => new SelectListItem
+            {
+                Value = ((int)b.Key).ToString(),
+                Text = b.Value
+            }).ToList();
 
         private Task<ApplicationUser> GetCurrentUserAsync()
         {

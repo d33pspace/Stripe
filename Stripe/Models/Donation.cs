@@ -8,7 +8,7 @@ namespace Stripe.Models
 
         public string CycleId { get; set; }
 
-        public double DonationAmount { get; set; }
+        public double? DonationAmount { get; set; }
 
         public string UserId { get; set; }
 

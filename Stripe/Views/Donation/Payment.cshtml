@@ -1,3 +1,5 @@
+@model DonationViewModel
+
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.Extensions.Options
 @inject IOptions<StripeSettings> Stripe
@@ -10,7 +12,8 @@
             class="stripe-button"
             data-key="@Stripe.Value.PublishableKey"
             data-locale="auto"
-            data-description="Sample Charge"
+            data-email=""
+            data-description=@model.Reason
             data-amount="500">
     </script>
 </form>

@@ -11,6 +11,9 @@
 <p><b>Step 1:</b></p>
 
 <form asp-controller="Home" asp-action="Create">
+    
+    @Html.ValidationSummary()
+
     <p>I would like to make a </p>
 
     <select asp-for="CycleId"
@@ -20,12 +23,21 @@
 
     gift of:</p>
 
-        <p>
-            [ ] $18 to provide one day of showers, laundry and care for five people.<br />
-            [ ] $63 to provide a week of shelter and training for one person.<br />
-            [ ] $200 towards shower renovations or the purchase of a new van.<br />
-            $ [ <input asp-for="DonationAmount" />] to help as many people as possible today!
-        </p>
+    <ul>
+        @foreach (var donation in Model.DonationOptions)
+        {
+            if (donation.IsCustom)
+            {
+                <li><input asp-for="DonationAmount"/> @donation.Reason</li>
+            }
+            else
+            {
+                <li> <input asp-for="SelectedAmount" type="radio" value="@donation.Id" /> @donation.Amount @donation.Reason</li>
+            }
+        }
+    </ul>
+
+
 
     <input type="submit" value="Submit" />
 </form>
