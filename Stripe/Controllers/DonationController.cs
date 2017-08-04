@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -9,6 +10,7 @@ using Stripe.Services;
 
 namespace Stripe.Controllers
 {
+    [AllowAnonymous]
     public class DonationController : Controller
     {
         private readonly IDonationService _donationService;
@@ -31,12 +33,7 @@ namespace Stripe.Controllers
             _stripeSettings = stripeSettings;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> Payment(int id)
+        public IActionResult Payment(int id)
         {
             var donation = _donationService.GetById(id);
             if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
@@ -44,11 +41,7 @@ namespace Stripe.Controllers
                 var model = (DonationViewModel) donation;
                 return View("Payment", model);
             }
-
-            var user = await GetCurrentUserAsync();
-            var payment = new PaymentViewViewModel();
-            //payment.Subscriptions = user.Subscriptions.Select(s => new SubscriptionViewModel()).ToList();
-            return View(donation);
+            return View("Subscriptions", new {Id = id});
         }
 
         [HttpPost]
@@ -58,11 +51,20 @@ namespace Stripe.Controllers
             return View();
         }
 
+        [Authorize]
+        public async Task<IActionResult> Subscriptions(int? id)
+        {
+
+            var user = await GetCurrentUserAsync();
+            var payment = new PaymentViewViewModel();
+            //payment.Subscriptions = user.Subscriptions.Select(s => new SubscriptionViewModel()).ToList();
+            return View();
+        }
+
         private Task<ApplicationUser> GetCurrentUserAsync()
         {
             return _userManager.GetUserAsync(HttpContext.User);
         }
-
 
     }
 }

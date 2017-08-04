@@ -110,7 +110,7 @@ namespace Stripe.Controllers
                 UserId = user.Id
             };
             _donationService.Save(model);
-            return RedirectToAction("Payment", "Donation", new { Id = model.Id });
+            return RedirectToAction("Subscriptions", "Donation", new { Id = model.Id });
         }
 
         public IActionResult About()
