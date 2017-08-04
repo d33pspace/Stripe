@@ -19,5 +19,7 @@ namespace Stripe.Services
         Task DeleteAsync(string userId, int cardId);
 
         Task<bool> AnyAsync(int? cardId, string userId);
+        Task<string> GetTokenId(CreditCardViewModel model);
+        string Charge(string stripeEmail, string stripeToken);
     }
 }

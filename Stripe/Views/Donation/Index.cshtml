@@ -1,16 +1,16 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
-@model Donation
+@using Microsoft.Extensions.Options
+@inject IOptions<StripeSettings> Stripe
 
-@{
-    ViewData["Title"] = "Index";
-}
-@inject IDonationService DonationService
-
-<h2>Billing</h2>
-<br />
-
-@Html.Partial("_Subscriptions", DonationService.GetSubScriptions(Model.UserId))
-<br />
-@Html.Partial("_PaymentDetails", DonationService.GetPaymentDetails(Model.UserId))
-
-
+<form asp-action="Charge" asp-controller="Donation" method="POST">
+    <article>
+        <label>Amount: $5.00</label>
+    </article>
+    <script src="//checkout.stripe.com/v2/checkout.js"
+            class="stripe-button"
+            data-key="@Stripe.Value.PublishableKey"
+            data-locale="auto"
+            data-description="Sample Charge"
+            data-amount="500">
+    </script>
+</form>

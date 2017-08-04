@@ -36,5 +36,10 @@ namespace Stripe
         {
             return (from T enumValue in Enum.GetValues(typeof(T)) select new KeyValuePair<T, string>(enumValue, GetDescription<AttributeType>(enumValue))).ToList();
         }
+
+        public static T GetValue(string value)
+        {
+            return (T)Enum.Parse(typeof(T), value);
+        }
     }
 }

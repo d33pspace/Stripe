@@ -25,6 +25,8 @@ namespace Stripe.Models
 
         public string AddressCity { get; set; }
 
+        public string AddressZip { get; set; }
+
         public string AddressCountry { get; set; }
 
         public string AddressLine1 { get; set; }
@@ -37,9 +39,9 @@ namespace Stripe.Models
 
         public string Cvc { get; set; }
 
-        public string ExpirationMonth { get; set; }
+        public int? ExpirationMonth { get; set; }
 
-        public string ExpirationYear { get; set; }
+        public int? ExpirationYear { get; set; }
 
         public string CardCountry { get; set; }
 
