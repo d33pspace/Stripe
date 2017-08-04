@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Stripe.Data;
 using Stripe.Models;
 
@@ -13,9 +14,11 @@ namespace Stripe.Services
             _dbContext = dbContext;
         }
 
-        public List<KeyValuePair<PaymentCycle, string>> GetCycles()
+        public Dictionary<PaymentCycle, string> GetCycles()
         {
-            return EnumInfo<PaymentCycle>.GetValues();
+            return EnumInfo<PaymentCycle>
+                .GetValues()
+                .ToDictionary(o => o.Key, o => o.Value);
         }
 
         public void Save(Donation donation)

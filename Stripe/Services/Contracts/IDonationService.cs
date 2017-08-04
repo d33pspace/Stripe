@@ -5,7 +5,7 @@ namespace Stripe.Services
 {
     public interface IDonationService
     {
-        List<KeyValuePair<PaymentCycle, string>> GetCycles();
+        Dictionary<PaymentCycle, string> GetCycles();
         void Save(Donation donation);
         Donation GetById(int id);
     }
