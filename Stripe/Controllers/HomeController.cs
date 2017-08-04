@@ -24,9 +24,6 @@ namespace Stripe.Controllers
             _donationService = donationService;
         }
 
-
-
-
         public IActionResult Index()
         {
             var model = new DonationViewModel
@@ -129,10 +126,8 @@ namespace Stripe.Controllers
                 Text = b.Value
             }).ToList();
 
-        private Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return _userManager.GetUserAsync(HttpContext.User);
-        }
+        private Task<ApplicationUser> GetCurrentUserAsync() => 
+            _userManager.GetUserAsync(HttpContext.User);
     }
 
 }
