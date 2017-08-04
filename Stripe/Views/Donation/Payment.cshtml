@@ -12,8 +12,7 @@
             class="stripe-button"
             data-key="@Stripe.Value.PublishableKey"
             data-locale="auto"
-            data-email=""
-            data-description=@model.Reason
+            data-description=@model.GetDescription()
             data-amount="500">
     </script>
 </form>

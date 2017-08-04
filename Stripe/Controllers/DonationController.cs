@@ -39,26 +39,15 @@ namespace Stripe.Controllers
 
         public async Task<IActionResult> Payment(int id)
         {
-            var user = await GetCurrentUserAsync();
-            var payment = new PaymentViewViewModel();
             var donation = _donationService.GetById(id);
-
-
-            
             if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
             {
-                
+                return View("Payment", donation);
             }
-            else
-            {
-                
-            }
-                //payment.Subscriptions = user.Subscriptions.Select(s => new SubscriptionViewModel()).ToList();
 
-                ;
-
-            // Get Card types 
-
+            var user = await GetCurrentUserAsync();
+            var payment = new PaymentViewViewModel();
+            //payment.Subscriptions = user.Subscriptions.Select(s => new SubscriptionViewModel()).ToList();
             return View(donation);
         }
 
