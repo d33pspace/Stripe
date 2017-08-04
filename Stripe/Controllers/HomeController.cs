@@ -30,8 +30,8 @@ namespace Stripe.Controllers
                 .GetCycles()
                 .Select(b => new SelectListItem
                 {
-                    Text = b.Key.ToString(),
-                    Value = b.Value.ToString()
+                    Value = ((int)b.Key).ToString(),
+                    Text = b.Value
                 }).ToList();
 
             var model = new DonationViewModel
@@ -41,16 +41,20 @@ namespace Stripe.Controllers
             return View(model);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             if (User.Identity.IsAuthenticated)
             {
                 var value = HttpContext.Session.GetString(SessionKey);
                 if (!string.IsNullOrEmpty(value))
                 {
+                    var user = await GetCurrentUserAsync();
                     var model = JsonConvert.DeserializeObject<Donation>(value);
-                    _billingService.Add(model);
-                    return RedirectToAction("Index", "Billing", new { Id = model.Id });
+                    model.User = user;
+                    model.UserId = user.Id;
+
+                    _billingService.SaveUserBill(model);
+                    return RedirectToAction("Payment", "Billing", new { Id = model.Id });
                 }
             }
             return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
@@ -82,9 +86,9 @@ namespace Stripe.Controllers
                 User = user,
                 TransactionDate = DateTime.Now
             };
-            _billingService.Add(model);
+            _billingService.SaveUserBill(model);
 
-            return RedirectToAction("Index", "Billing", new { Id = model.Id });
+            return RedirectToAction("Payment", "Billing", new { Id = model.Id });
         }
 
         public IActionResult About()

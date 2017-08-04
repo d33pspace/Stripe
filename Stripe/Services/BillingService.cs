@@ -18,7 +18,7 @@ namespace Stripe.Services
             return EnumInfo<PaymentCycle>.GetValues();
         }
 
-        public void Add(Donation donation)
+        public void SaveUserBill(Donation donation)
         {
             _dbContext.Donations.Add(donation);
             _dbContext.SaveChanges();

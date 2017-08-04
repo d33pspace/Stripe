@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -55,5 +56,49 @@ namespace Stripe.Models
             CardType = null;
             CardTypes = new List<SelectListItem>();
         }
+    }
+
+    public class PaymentViewViewModel
+    {
+        public string UserId { get; set; }
+
+        public List<SubscriptionViewModel> Subscriptions { get; set; }
+
+        public CreditCardViewModel CreditCard { get; set; }
+
+        public PaymentViewViewModel()
+        {
+            Subscriptions = new List<SubscriptionViewModel>();
+        }
+    }
+
+    public class SubscriptionViewModel
+    {
+        public int Id { get; set; }
+
+        public DateTime? Start { get; set; }
+
+        public DateTime? End { get; set; }
+
+        public DateTime? TrialStart { get; set; }
+
+        public DateTime? TrialEnd { get; set; }
+
+        public string SubscriptionPlanId { get; set; }
+
+        public string UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser User { get; set; }
+
+        [MaxLength(50)]
+        public string StripeId { get; set; }
+
+        public string Status { get; set; }
+
+        public decimal TaxPercent { get; set; }
+
+        public string ReasonToCancel { get; set; }
+
     }
 }
