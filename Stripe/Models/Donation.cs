@@ -15,5 +15,7 @@ namespace Stripe.Models
         public virtual ApplicationUser User { get; set; }
 
         public DateTime? TransactionDate { get; set; }
+
+        public int SelectedAmount { get; set; }
     }
 }

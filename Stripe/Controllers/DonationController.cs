@@ -31,7 +31,6 @@ namespace Stripe.Controllers
             _stripeSettings = stripeSettings;
         }
 
-
         public IActionResult Index()
         {
             return View();
@@ -42,7 +41,8 @@ namespace Stripe.Controllers
             var donation = _donationService.GetById(id);
             if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
             {
-                return View("Payment", donation);
+                var model = (DonationViewModel) donation;
+                return View("Payment", model);
             }
 
             var user = await GetCurrentUserAsync();

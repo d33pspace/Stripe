@@ -72,6 +72,20 @@ namespace Stripe.Controllers
                 return View("Index", donation);
             }
 
+            Donation model;
+            if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
+            {
+                model = new Donation
+                {
+                    CycleId = donation.CycleId,
+                    DonationAmount = donation.DonationAmount,
+                    SelectedAmount = donation.SelectedAmount,
+                    TransactionDate = DateTime.Now
+                };
+                _donationService.Save(model);
+                return RedirectToAction("Payment", "Donation", new { Id = model.Id });
+            }
+
             // If user is not authenticated, lets save the details on the session cache and we get them after authentication
             if (!User.Identity.IsAuthenticated)
             {
@@ -84,18 +98,18 @@ namespace Stripe.Controllers
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
             }
 
-            // User is authentication
+            // User has logged in
             var user = await GetCurrentUserAsync();
-            var model = new Donation
+            model = new Donation
             {
                 CycleId = donation.CycleId,
                 DonationAmount = donation.DonationAmount,
-                UserId = user.Id,
+                SelectedAmount = donation.SelectedAmount,
+                TransactionDate = DateTime.Now,
                 User = user,
-                TransactionDate = DateTime.Now
+                UserId = user.Id
             };
             _donationService.Save(model);
-
             return RedirectToAction("Payment", "Donation", new { Id = model.Id });
         }
 

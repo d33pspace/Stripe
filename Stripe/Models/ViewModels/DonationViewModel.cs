@@ -18,6 +18,8 @@ namespace Stripe.Models
 
         public List<DonationOption> DonationOptions { get; set; }
 
+        private const int StripeMultiplier = 100;
+
         public DonationViewModel()
         {
             DonationOptions = new List<DonationOption>
@@ -32,10 +34,10 @@ namespace Stripe.Models
         public double GetAmount()
         {
             if (DonationAmount != null && DonationAmount > 0)
-                return DonationAmount.Value;
+                return DonationAmount.Value * StripeMultiplier;
 
             if (SelectedAmount > 0)
-                return DonationOptions[SelectedAmount - 1].Amount;
+                return DonationOptions[SelectedAmount - 1].Amount * StripeMultiplier;
 
             return 0.0;
         }
@@ -45,6 +47,17 @@ namespace Stripe.Models
             if (SelectedAmount == 0)
                 return $"{DonationAmount} {DonationOptions[3].Reason}";
             return DonationOptions[SelectedAmount - 1].Description;
+        }
+
+        public static implicit operator DonationViewModel(Donation donation)
+        {
+            return new DonationViewModel
+            {
+                Id = donation.Id,
+                CycleId = donation.CycleId,
+                DonationAmount = donation.DonationAmount,
+                SelectedAmount = donation.SelectedAmount,
+            };
         }
     }
 
