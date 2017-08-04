@@ -8,11 +8,11 @@ using Stripe.Models;
 
 namespace Stripe.Services
 {
-    public class CardDataService : ICardDataService
+    public class CardService : ICardService
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public CardDataService(ApplicationDbContext context)
+        public CardService(ApplicationDbContext context)
         {
             this._dbContext = context;
         }

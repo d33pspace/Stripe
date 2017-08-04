@@ -4,7 +4,7 @@ using Stripe.Models;
 
 namespace Stripe.Services
 {
-    public interface ICardDataService
+    public interface ICardService
     {
         Task<IList<CreditCard>> GetAllAsync(string userId);
 

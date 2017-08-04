@@ -4,11 +4,11 @@ using Stripe.Models;
 
 namespace Stripe.Services
 {
-    public class BillingService : IBillingService
+    public class DonationService : IDonationService
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public BillingService(ApplicationDbContext dbContext)
+        public DonationService(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -18,7 +18,7 @@ namespace Stripe.Services
             return EnumInfo<PaymentCycle>.GetValues();
         }
 
-        public void SaveUserBill(Donation donation)
+        public void Save(Donation donation)
         {
             _dbContext.Donations.Add(donation);
             _dbContext.SaveChanges();

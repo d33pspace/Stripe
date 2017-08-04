@@ -9,11 +9,11 @@ using Stripe.Services;
 
 namespace Stripe.Services
 {
-    public class SubscriptionDataService : ISubscriptionDataService
+    public class SubscriptionService : ISubscriptionService
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public SubscriptionDataService(ApplicationDbContext context)
+        public SubscriptionService(ApplicationDbContext context)
         {
             this._dbContext = context;
         }

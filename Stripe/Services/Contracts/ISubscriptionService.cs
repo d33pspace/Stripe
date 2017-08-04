@@ -5,7 +5,7 @@ using Stripe.Models;
 
 namespace Stripe.Services
 {
-    public interface ISubscriptionDataService
+    public interface ISubscriptionService
     {
         Subscription FindById(string stripeSubscriptionId);
 

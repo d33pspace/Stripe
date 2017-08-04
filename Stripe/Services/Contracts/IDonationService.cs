@@ -3,10 +3,10 @@ using Stripe.Models;
 
 namespace Stripe.Services
 {
-    public interface IBillingService
+    public interface IDonationService
     {
         List<KeyValuePair<PaymentCycle, string>> GetCycles();
-        void SaveUserBill(Donation donation);
+        void Save(Donation donation);
         Donation GetById(int id);
     }
 }

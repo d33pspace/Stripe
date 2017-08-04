@@ -4,13 +4,13 @@
 @{
     ViewData["Title"] = "Index";
 }
-@inject IBillingService BillingService
+@inject IDonationService DonationService
 
 <h2>Billing</h2>
 <br />
 
-@Html.Partial("_Subscriptions", BillingService.GetSubScriptions(Model.UserId))
+@Html.Partial("_Subscriptions", DonationService.GetSubScriptions(Model.UserId))
 <br />
-@Html.Partial("_PaymentDetails", BillingService.GetPaymentDetails(Model.UserId))
+@Html.Partial("_PaymentDetails", DonationService.GetPaymentDetails(Model.UserId))
 
 

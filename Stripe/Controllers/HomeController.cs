@@ -15,18 +15,18 @@ namespace Stripe.Controllers
     public class HomeController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IBillingService _billingService;
+        private readonly IDonationService _donationService;
         const string SessionKey = "sessionKey";
 
-        public HomeController(UserManager<ApplicationUser> userManager, IBillingService billingService)
+        public HomeController(UserManager<ApplicationUser> userManager, IDonationService donationService)
         {
             _userManager = userManager;
-            _billingService = billingService;
+            _donationService = donationService;
         }
 
         public IActionResult Index()
         {
-            var donationCycles = _billingService
+            var donationCycles = _donationService
                 .GetCycles()
                 .Select(b => new SelectListItem
                 {
@@ -53,7 +53,7 @@ namespace Stripe.Controllers
                     model.User = user;
                     model.UserId = user.Id;
 
-                    _billingService.SaveUserBill(model);
+                    _donationService.Save(model);
                     return RedirectToAction("Payment", "Billing", new { Id = model.Id });
                 }
             }
@@ -86,7 +86,7 @@ namespace Stripe.Controllers
                 User = user,
                 TransactionDate = DateTime.Now
             };
-            _billingService.SaveUserBill(model);
+            _donationService.Save(model);
 
             return RedirectToAction("Payment", "Billing", new { Id = model.Id });
         }

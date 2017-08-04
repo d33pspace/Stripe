@@ -9,22 +9,22 @@ namespace Stripe.Controllers
 {
     public class BillingController : Controller
     {
-        private readonly IBillingService _billingService;
+        private readonly IDonationService _donationService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public BillingController(
             UserManager<ApplicationUser> userManager, 
-            IBillingService billingService)
+            IDonationService donationService)
         {
             _userManager = userManager;
-            _billingService = billingService;
+            _donationService = donationService;
         }
 
         public async Task<IActionResult> Payment(int id)
         {
             var user = await GetCurrentUserAsync();
             var payment = new PaymentViewViewModel();
-            var donation = _billingService.GetById(id);
+            var donation = _donationService.GetById(id);
             //if(donation.CycleId == )
             //payment.Subscriptions = user.Subscriptions.Select(s => new SubscriptionViewModel()).ToList();
 
