@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Stripe.Data;
 using Stripe.Models;
 using Stripe.Services;
@@ -12,10 +13,12 @@ namespace Stripe.Services
     public class SubscriptionService : ISubscriptionService
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IOptions<StripeSettings> _stripeOptions;
 
-        public SubscriptionService(ApplicationDbContext context)
+        public SubscriptionService(ApplicationDbContext context, IOptions<StripeSettings> stripeOptions)
         {
             this._dbContext = context;
+            _stripeOptions = stripeOptions;
         }
 
         public Subscription FindById(string stripeSubscriptionId)
@@ -34,12 +37,8 @@ namespace Stripe.Services
 
             var s = new Subscription
             {
-                Start = DateTime.UtcNow,
-                End = null,
                 UserId = user.Id,
-                //SubscriptionPlan = plan,
                 Status = trialPeriodInDays == null ? "active" : "trialing",
-                TaxPercent = taxPercent,
                 StripeId = stripeId
             };
 
@@ -63,15 +62,12 @@ namespace Stripe.Services
         {
             return await _dbContext.Subscriptions
                 .Where(s => s.User.Id == userId && s.Status != "canceled" && s.Status != "unpaid")
-                .Where(s => s.End == null || s.End > DateTime.UtcNow)
                 .Select(s => s).ToListAsync();
         }
 
         public async Task EndSubscriptionAsync(int subscriptionId, DateTime subscriptionEnDateTime, string reasonToCancel)
         {
             var dbSub = await _dbContext.Subscriptions.FindAsync(subscriptionId);
-            dbSub.End = subscriptionEnDateTime;
-            dbSub.ReasonToCancel = reasonToCancel;
             await _dbContext.SaveChangesAsync();
         }
 
@@ -89,6 +85,26 @@ namespace Stripe.Services
             }
 
             await _dbContext.SaveChangesAsync();
+        }
+
+        public void CreateSubscription(Subscription subscription)
+        {
+            var plan = new StripePlanCreateOptions
+            {
+                Id = subscription.SubscriptionPlanId,
+                Amount = subscription.Amount,
+                Currency = subscription.Currency,
+                Interval = subscription.Interval,
+                Name = subscription.Name
+            };
+            // "usd" only supported right now
+            // "month" or "year"
+
+            var planService = new StripePlanService(_stripeOptions.Value.SecretKey);
+            var response = planService.Create(plan);
+
+            _dbContext.Subscriptions.Add(subscription);
+            _dbContext.SaveChanges();
         }
     }
 }

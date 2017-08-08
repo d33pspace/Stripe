@@ -8,14 +8,6 @@ namespace Stripe.Models
     {
         public int Id { get; set; }
 
-        public DateTime? Start { get; set; }
-
-        public DateTime? End { get; set; }
-
-        public DateTime? TrialStart { get; set; }
-
-        public DateTime? TrialEnd { get; set; }
-
         public string SubscriptionPlanId { get; set; }
 
         public string UserId { get; set; }
@@ -28,17 +20,12 @@ namespace Stripe.Models
 
         public string Status { get; set; }
 
-        public decimal TaxPercent { get; set; }
+        public int Amount { get; set; }
 
-        public string ReasonToCancel { get; set; }
+        public string Currency { get; set; }
 
-        public bool IsTrialing()
-        {
-            return TrialStart != null && TrialEnd != null && TrialEnd > DateTime.UtcNow;
-        }
-        private bool IsTerminated()
-        {
-            return this.End != null && this.End < DateTime.UtcNow;
-        }
+        public string Interval { get; set; }
+
+        public string Name { get; set; }
     }
 }

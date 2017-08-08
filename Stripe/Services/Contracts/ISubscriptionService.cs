@@ -23,5 +23,7 @@ namespace Stripe.Services
         Task UpdateSubscriptionAsync(Subscription subscription);
 
         Task DeleteSubscriptionsAsync(string userId);
+
+        void CreateSubscription(Subscription subscription);
     }
 }
