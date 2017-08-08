@@ -19,5 +19,7 @@ namespace Stripe.Models.ManageViewModels
         public bool BrowserRemembered { get; set; }
 
         public string UserId { get; set; }
+
+        public string TokenId { get; set; }
     }
 }

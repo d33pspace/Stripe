@@ -22,8 +22,6 @@ namespace Stripe.Services
 
         Task UpdateSubscriptionAsync(Subscription subscription);
 
-        Task UpdateSubscriptionTax(string subscriptionId, decimal taxPercent);
-
         Task DeleteSubscriptionsAsync(string userId);
     }
 }

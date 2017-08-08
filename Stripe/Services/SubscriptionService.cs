@@ -81,15 +81,6 @@ namespace Stripe.Services
             await _dbContext.SaveChangesAsync();
         }
 
-
-        public async Task UpdateSubscriptionTax(string subscriptionId, decimal taxPercent)
-        {
-            var subscription = await _dbContext.Subscriptions.Where(s => s.StripeId == subscriptionId).FirstOrDefaultAsync();
-            subscription.TaxPercent = taxPercent;
-            await _dbContext.SaveChangesAsync();
-        }
-
-
         public async Task DeleteSubscriptionsAsync(string userId)
         {
             foreach (var subscription in _dbContext.Subscriptions.Where(s => s.UserId == userId).Select(s =>s))

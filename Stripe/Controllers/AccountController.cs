@@ -22,6 +22,7 @@ namespace Stripe.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
+        private readonly ISubscriptionService _subscriptionService;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
 
@@ -31,13 +32,15 @@ namespace Stripe.Controllers
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            ISubscriptionService subscriptionService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _emailSender = emailSender;
             _smsSender = smsSender;
+            _subscriptionService = subscriptionService;
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
@@ -474,5 +477,16 @@ namespace Stripe.Controllers
         }
 
         #endregion
+
+        public async Task<IActionResult> DeleteSubcription(int subscriptionId)
+        {
+            await _subscriptionService.EndSubscriptionAsync(subscriptionId, DateTime.Now, "");
+            return View("Index");
+        }
+
+        public IActionResult AddSubscription()
+        {
+            return View();
+        }
     }
 }

@@ -65,7 +65,8 @@ namespace Stripe.Controllers
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
-                UserId = user.Id
+                UserId = user.Id,
+                TokenId = user.StripeCustomerId
             };
             return View(model);
         }
@@ -370,5 +371,7 @@ namespace Stripe.Controllers
         }
 
         #endregion
+
+
     }
 }

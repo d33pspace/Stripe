@@ -1,4 +1,39 @@
 @model string
 
-<h2>Subscriptions</h2>
+@inject ISubscriptionService SubscriptionService
+
+@{
+    var subscriptions = await @SubscriptionService.UserSubscriptionsAsync(Model);
+}
+
+<p>
+    <a asp-controller="Account" asp-action="AddSubscription" class="btn btn-primary">Add Subscription</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <td></td>
+        <td>Start</td>
+        <td>End</td>
+        <td>Status</td>
+        <td></td>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var subscription in subscriptions)
+        {
+            <tr>@subscription.Id</tr>
+            <tr>@subscription.Start</tr>
+            <tr>@subscription.End</tr>
+            <tr>@subscription.Status</tr>
+            <tr><a asp-action="DeleteSubcription" asp-controller="Account" asp-action-id="@subscription.Id" class="btn btn-sm">Delete</a></tr>
+        }
+    </tbody>
+</table>
+
+
+    
+
+
 
