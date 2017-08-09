@@ -33,7 +33,7 @@ namespace Stripe.Controllers
             _stripeSettings = stripeSettings;
         }
 
-        public IActionResult Payment(int id)
+        public async Task<IActionResult> Payment(int id)
         {
             var donation = _donationService.GetById(id);
             if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
@@ -41,8 +41,56 @@ namespace Stripe.Controllers
                 var model = (DonationViewModel) donation;
                 return View("Payment", model);
             }
+
+            // Lets search for subscriptions since this user wants monthly/weekly payments
+            var user = await GetCurrentUserAsync();
+            var subscriptionService = new StripeSubscriptionService();
+            StripeSubscriptionListOptions lo = new StripeSubscriptionListOptions
+            {
+                CustomerId = user.StripeCustomerId
+            };
+
+            ViewBag.Subscriptions = subscriptionService.List(lo);
             return View("Subscriptions", new {Id = id});
         }
+
+        public async Task<IActionResult> Confirm(string planId, string stripeToken)
+        {
+            var user = await GetCurrentUserAsync();
+            //var planId = "$85"
+
+            if (string.IsNullOrEmpty(user.StripeCustomerId))
+            {
+                var customer = new StripeCustomerCreateOptions
+                {
+                    Email = "{user.email}",
+                    Description = "{user.email} {user.Id}",
+                    PlanId = planId,
+                    SourceToken = stripeToken
+                };
+
+                var customerService = new StripeCustomerService();
+
+                StripeCustomer stripeCustomer = customerService.Create(customer);
+                user.StripeCustomerId = stripeCustomer.Id;
+                stripeCustomer.Subscriptions.Data.ForEach(s => SaveSubscription(s, user));
+                await _userManager.UpdateAsync(user);
+            }
+            else
+            {
+                var subscriptionService = new StripeSubscriptionService();
+                var stripeSubscription = subscriptionService.Create(user.StripeCustomerId);
+                await SaveSubscription(stripeSubscription, user);
+                await _userManager.UpdateAsync(user);
+            }
+            return RedirectToAction("Payment");
+        }
+
+        private Task SaveSubscription(StripeSubscription stripeSubscription, ApplicationUser user)
+        {
+            return null;
+        }
+
 
         [HttpPost]
         public IActionResult Charge(string stripeEmail, string stripeToken)
