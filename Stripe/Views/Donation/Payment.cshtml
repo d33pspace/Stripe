@@ -2,12 +2,17 @@
 
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.Extensions.Options
+
 @inject IOptions<StripeSettings> Stripe
 
 <form asp-action="Charge" asp-controller="Donation"  method="POST">
     <article>
-        <label>Amount: $ @(Model.GetAmount())</label>
+        <label>Amount: $ @(Model.GetDisplayAmount())</label>
     </article>
+    
+    <input hidden name="DonationAmount" id="DonationAmount" value="@(Model.GetDisplayAmount())"/>
+    <input hidden name="Description" id="Description" value="@(Model.GetDescription())"/>
+
     <script src="//checkout.stripe.com/v2/checkout.js"
             class="stripe-button"
             data-key="@Stripe.Value.PublishableKey"

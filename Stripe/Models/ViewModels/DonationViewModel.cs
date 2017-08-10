@@ -42,6 +42,17 @@ namespace Stripe.Models
             return 0.0;
         }
 
+        public double GetDisplayAmount()
+        {
+            if (DonationAmount != null && DonationAmount > 0)
+                return DonationAmount.Value;
+
+            if (SelectedAmount > 0)
+                return DonationOptions[SelectedAmount - 1].Amount;
+
+            return 0.0;
+        }
+
         public string GetDescription()
         {
             if (SelectedAmount == 0)

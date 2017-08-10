@@ -93,10 +93,25 @@ namespace Stripe.Controllers
 
 
         [HttpPost]
-        public IActionResult Charge(string stripeEmail, string stripeToken)
+        public IActionResult Charge(string stripeEmail, string stripeToken, string description, int donationAmount)
         {
-            _cardService.Charge(stripeEmail, stripeToken);
-            return View();
+            var customers = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+            var charges = new StripeChargeService(_stripeSettings.Value.SecretKey);
+
+            var customer = customers.Create(new StripeCustomerCreateOptions
+            {
+                Email = stripeEmail,
+                SourceToken = stripeToken
+            });
+
+            var charge = charges.Create(new StripeChargeCreateOptions
+            {
+                Amount = donationAmount,
+                Description = description,
+                Currency = "usd",
+                CustomerId = customer.Id
+            });
+            return View(charge);
         }
 
         [Authorize]

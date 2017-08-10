@@ -1,3 +1,4 @@
+@model StripeCharge
 
 @{
     ViewData["Title"] = "Charge";
@@ -5,4 +6,4 @@
 
 <h2>Charge</h2>
 
-<h2>You successfully paid <strong>$5.00</strong></h2>
+<h2>You successfully paid <strong>@Model.Amount</strong> for @Model.Description</h2>
