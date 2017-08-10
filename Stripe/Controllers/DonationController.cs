@@ -27,7 +27,7 @@ namespace Stripe.Controllers
             _stripeSettings = stripeSettings;
         }
 
-        public async Task<IActionResult> Payment(int id)
+        public IActionResult Payment(int id)
         {
             var donation = _donationService.GetById(id);
             if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
@@ -73,7 +73,6 @@ namespace Stripe.Controllers
             return null;
         }
 
-
         [HttpPost]
         public IActionResult Charge(string stripeEmail, string stripeToken, string description, int donationAmount)
         {
@@ -94,16 +93,6 @@ namespace Stripe.Controllers
                 CustomerId = customer.Id
             });
             return View(charge);
-        }
-
-        [Authorize]
-        public async Task<IActionResult> Subscriptions(int? id)
-        {
-
-            var user = await GetCurrentUserAsync();
-            var payment = new PaymentViewViewModel();
-            //payment.Subscriptions = user.Subscriptions.Select(s => new SubscriptionViewModel()).ToList();
-            return View();
         }
 
         private Task<ApplicationUser> GetCurrentUserAsync()
