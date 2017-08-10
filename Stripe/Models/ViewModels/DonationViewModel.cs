@@ -10,7 +10,7 @@ namespace Stripe.Models
 
         public string CycleId { get; set; }
 
-        public double? DonationAmount { get; set; }
+        public int DonationAmount { get; set; }
 
         public List<SelectListItem> DonationCycles { get; set; }
 
@@ -33,8 +33,8 @@ namespace Stripe.Models
 
         public double GetAmount()
         {
-            if (DonationAmount != null && DonationAmount > 0)
-                return DonationAmount.Value * StripeMultiplier;
+            if (DonationAmount > 0)
+                return DonationAmount * StripeMultiplier;
 
             if (SelectedAmount > 0)
                 return DonationOptions[SelectedAmount - 1].Amount * StripeMultiplier;
@@ -44,8 +44,8 @@ namespace Stripe.Models
 
         public double GetDisplayAmount()
         {
-            if (DonationAmount != null && DonationAmount > 0)
-                return DonationAmount.Value;
+            if (DonationAmount > 0)
+                return DonationAmount;
 
             if (SelectedAmount > 0)
                 return DonationOptions[SelectedAmount - 1].Amount;
@@ -58,6 +58,11 @@ namespace Stripe.Models
             if (SelectedAmount == 0)
                 return $"{DonationAmount} {DonationOptions[3].Reason}";
             return DonationOptions[SelectedAmount - 1].Description;
+        }
+
+        public bool IsCustom()
+        {
+            return SelectedAmount == 3;
         }
 
         public static implicit operator DonationViewModel(Donation donation)

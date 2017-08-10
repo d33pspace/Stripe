@@ -68,6 +68,9 @@ namespace Stripe
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            // Create plans on Stripe side
+            //donationService.EnsurePlansExist();
+
             app.UseSession();
 
             if (env.IsDevelopment())
@@ -94,5 +97,7 @@ namespace Stripe
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
+
     }
 }

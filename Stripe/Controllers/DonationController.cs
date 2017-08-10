@@ -35,6 +35,7 @@ namespace Stripe.Controllers
                 var model = (DonationViewModel) donation;
                 return View("Payment", model);
             }
+            var plan = _donationService.GetPlan(donation);
 
             return View("Index");
         }

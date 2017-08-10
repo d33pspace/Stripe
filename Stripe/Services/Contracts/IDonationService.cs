@@ -8,5 +8,8 @@ namespace Stripe.Services
         Dictionary<PaymentCycle, string> GetCycles();
         void Save(Donation donation);
         Donation GetById(int id);
+        IEnumerable<string> GetPlans();
+        void EnsurePlansExist();
+        StripePlan GetPlan(Donation donation);
     }
 }
