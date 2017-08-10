@@ -32,14 +32,5 @@ namespace Stripe.Services
             return _dbContext.Donations.Find(id);
         }
 
-        public List<Subscription> GetSubScriptions(string userId)
-        {
-            return new List<Subscription>();
-        }
-
-        public List<CreditCard> GetPaymentDetails(string userId)
-        {
-            return new List<CreditCard>();
-        }
     }
 }

@@ -14,22 +14,16 @@ namespace Stripe.Controllers
     public class DonationController : Controller
     {
         private readonly IDonationService _donationService;
-        private readonly ICardService _cardService;
-        private readonly ISubscriptionService _subscriptionService;
         private readonly IOptions<StripeSettings> _stripeSettings;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public DonationController(
             UserManager<ApplicationUser> userManager, 
             IDonationService donationService,
-            ICardService cardService,
-            ISubscriptionService subscriptionService,
             IOptions<StripeSettings> stripeSettings)
         {
             _userManager = userManager;
             _donationService = donationService;
-            _cardService = cardService;
-            _subscriptionService = subscriptionService;
             _stripeSettings = stripeSettings;
         }
 
@@ -42,36 +36,24 @@ namespace Stripe.Controllers
                 return View("Payment", model);
             }
 
-            // Lets search for subscriptions since this user wants monthly/weekly payments
-            var user = await GetCurrentUserAsync();
-            var subscriptionService = new StripeSubscriptionService();
-            StripeSubscriptionListOptions lo = new StripeSubscriptionListOptions
-            {
-                CustomerId = user.StripeCustomerId
-            };
-
-            ViewBag.Subscriptions = subscriptionService.List(lo);
-            return View("Subscriptions", new {Id = id});
+            return View("Index");
         }
 
-        public async Task<IActionResult> Confirm(string planId, string stripeToken)
+        public async Task<IActionResult> Index()
         {
             var user = await GetCurrentUserAsync();
-            //var planId = "$85"
-
             if (string.IsNullOrEmpty(user.StripeCustomerId))
             {
                 var customer = new StripeCustomerCreateOptions
                 {
                     Email = "{user.email}",
                     Description = "{user.email} {user.Id}",
-                    PlanId = planId,
-                    SourceToken = stripeToken
+                    PlanId = "planId"
                 };
 
-                var customerService = new StripeCustomerService();
+                var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
 
-                StripeCustomer stripeCustomer = customerService.Create(customer);
+                var stripeCustomer = customerService.Create(customer);
                 user.StripeCustomerId = stripeCustomer.Id;
                 stripeCustomer.Subscriptions.Data.ForEach(s => SaveSubscription(s, user));
                 await _userManager.UpdateAsync(user);

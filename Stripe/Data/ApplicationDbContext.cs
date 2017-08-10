@@ -25,8 +25,5 @@ namespace Stripe.Data
 
         public DbSet<Donation> Donations { get; set; }
 
-        public DbSet<Subscription> Subscriptions { get; set; }
-
-        public DbSet<CreditCard> CreditCards { get; set; }
     }
 }

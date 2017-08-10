@@ -60,8 +60,6 @@ namespace Stripe
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDonationService, DonationService>();
-            services.AddTransient<ICardService, CardService>();
-            services.AddTransient<ISubscriptionService, SubscriptionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
