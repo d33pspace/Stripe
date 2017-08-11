@@ -109,6 +109,7 @@ namespace Stripe.Controllers
         public IActionResult Delete(string subscriptionId)
         {
             var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
+            subscriptionService.Cancel(subscriptionId);
             return RedirectToAction("Index");
         }
 

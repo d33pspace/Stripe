@@ -33,7 +33,7 @@
                             <td>@subscription.Currency</td>
                             <td>@(subscription.Amount / 100)</td>
                             <td>@subscription.Status</td>
-                            <td><a class="btn btn-primary" asp-action="Delete" asp-route-id=@subscription.Id>Delete</a></td>
+                            <td><a class="btn btn-primary" asp-action="Delete" asp-route-subscriptionId=@subscription.Id>Delete</a></td>
                         </tr>
                     }
                 </tbody>
