@@ -10,7 +10,7 @@ namespace Stripe.Models
 
         public string CycleId { get; set; }
 
-        public int DonationAmount { get; set; }
+        public int? DonationAmount { get; set; }
 
         public List<SelectListItem> DonationCycles { get; set; }
 
@@ -31,33 +31,40 @@ namespace Stripe.Models
             };
         }
 
-        public double GetAmount()
+        public int GetAmount()
         {
             if (DonationAmount > 0)
-                return DonationAmount * StripeMultiplier;
+                return DonationAmount.Value * StripeMultiplier;
 
             if (SelectedAmount > 0)
                 return DonationOptions[SelectedAmount - 1].Amount * StripeMultiplier;
 
-            return 0.0;
+            return 0;
         }
 
-        public double GetDisplayAmount()
+        public int GetDisplayAmount()
         {
             if (DonationAmount > 0)
-                return DonationAmount;
+                return DonationAmount.Value;
 
             if (SelectedAmount > 0)
                 return DonationOptions[SelectedAmount - 1].Amount;
 
-            return 0.0;
+            return 0;
+        }
+
+        public string GetFullDescription()
+        {
+            if (SelectedAmount == 0)
+                return $"{DonationAmount} {DonationOptions[3].Reason}";
+            return $"{DonationOptions[SelectedAmount - 1].Amount} {DonationOptions[SelectedAmount - 1].Reason}";
         }
 
         public string GetDescription()
         {
             if (SelectedAmount == 0)
-                return $"{DonationAmount} {DonationOptions[3].Reason}";
-            return DonationOptions[SelectedAmount - 1].Description;
+                return DonationOptions[3].Reason;
+            return DonationOptions[SelectedAmount - 1].Reason;
         }
 
         public bool IsCustom()

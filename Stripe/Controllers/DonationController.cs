@@ -40,7 +40,7 @@ namespace Stripe.Controllers
             return View("Index");
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int id)
         {
             var user = await GetCurrentUserAsync();
             if (string.IsNullOrEmpty(user.StripeCustomerId))

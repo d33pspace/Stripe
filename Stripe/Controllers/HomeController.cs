@@ -33,6 +33,10 @@ namespace Stripe.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Executed when the user has now been authenticated and the user wants to access their subscriptions
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Create()
         {
             if (User.Identity.IsAuthenticated)
@@ -95,6 +99,9 @@ namespace Stripe.Controllers
                     var donationView = JsonConvert.SerializeObject(donation);
                     HttpContext.Session.SetString(SessionKey, donationView);
                 }
+
+                // This will redirect to "Create" action method when the user has been redirected after authentication
+                // as they will be required to authenticate before they can use their subscriptions
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
             }
 
@@ -110,7 +117,7 @@ namespace Stripe.Controllers
                 UserId = user.Id
             };
             _donationService.Save(model);
-            return RedirectToAction("Subscriptions", "Donation", new { Id = model.Id });
+            return RedirectToAction("Index", "Donation", new { Id = model.Id });
         }
 
         public IActionResult About()

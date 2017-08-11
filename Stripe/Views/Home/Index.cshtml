@@ -8,8 +8,6 @@
 <h2>@ViewData["Title"].</h2>
 <h3>@ViewData["Message"]</h3>
 
-<p><b>Step 1:</b></p>
-
 <form asp-controller="Home" asp-action="Create">
     
     @Html.ValidationSummary()
@@ -37,24 +35,7 @@
         }
     </ul>
 
-
-
     <input type="submit" value="Submit" />
 </form>
 
 
-<p><b>Step 2:</b></p>
-
-<p>User must sign in or create an account.</p>
-
-<p><b>Step 3:</b></p>
-
-<p>User enters credit card details.</p>
-
-<p><b>Step 4:</b></p>
-
-<p>User is notified of success or failure of Stripe transaction.</p>
-
-<p><b>Step 5:</b></p>
-
-<p>User can view or cancel any Stripe subscriptions in account profile.</p>
