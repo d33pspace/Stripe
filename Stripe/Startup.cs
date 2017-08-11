@@ -63,13 +63,16 @@ namespace Stripe
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, 
+            IHostingEnvironment env, 
+            ILoggerFactory loggerFactory,
+            IDonationService donationService)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             // Create plans on Stripe side
-            //donationService.EnsurePlansExist();
+            donationService.EnsurePlansExist();
 
             app.UseSession();
 

@@ -48,6 +48,7 @@ namespace Stripe.Controllers
                     var model = JsonConvert.DeserializeObject<Donation>(value);
                     model.User = user;
                     model.UserId = user.Id;
+                    model.TransactionDate = DateTime.Now;
 
                     _donationService.Save(model);
                     return RedirectToAction("Payment", "Donation", new { Id = model.Id });
@@ -117,7 +118,7 @@ namespace Stripe.Controllers
                 UserId = user.Id
             };
             _donationService.Save(model);
-            return RedirectToAction("Index", "Donation", new { Id = model.Id });
+            return RedirectToAction("Index", "Donation");
         }
 
         public IActionResult About()

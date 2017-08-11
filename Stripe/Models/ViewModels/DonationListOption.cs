@@ -8,8 +8,6 @@ namespace Stripe.Models
 
         public string Reason { get; set; }
 
-        //public string Description => $"{Amount} {Reason}";
-
         public bool IsCustom { get; set; }
     }
 }

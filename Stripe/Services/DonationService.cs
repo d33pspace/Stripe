@@ -49,19 +49,45 @@ namespace Stripe.Services
                             yield return $"{cycle.Value}_{option.Amount}";
         }
 
-        public StripePlan GetPlan(Donation donation)
+        public StripePlan GetOrCreatePlan(Donation donation)
         {
             var planService = new StripePlanService(_stripeSettings.Value.SecretKey);
-            //var item = (DonationViewModel) donation;
-            var frequency = EnumInfo<PaymentCycle>.GetValue(donation.CycleId).ToString().ToLower();
-            if (donation.DonationAmount == 0)
-                return planService.List().FirstOrDefault(s => s.Id == $"{frequency}_custom");
-            return planService.List().FirstOrDefault(s => s.Id == $"{frequency}_{donation.DonationAmount}");
+
+            var cycle = EnumInfo<PaymentCycle>.GetValue(donation.CycleId);
+            var frequency = EnumInfo<PaymentCycle>.GetDescription(cycle);
+            var amount = donation.DonationAmount != null ? donation.DonationAmount.Value : 0;
+            if (donation.DonationAmount == null)
+            {
+                var model = (DonationViewModel) donation;
+                amount = model.GetDisplayAmount();
+            }
+            var planName = $"{frequency}_{amount}".ToLower();
+
+            if (!Exists(planService, planName))
+            {
+                var plan = new StripePlanCreateOptions
+                {
+                    Id = planName,
+                    Amount = amount * 100,
+                    Currency = "usd",
+                    Interval = frequency, // day/month/year
+                    Name = planName
+                };
+                return planService.Create(plan);
+            }
+            else
+                return planService.Get(planName);
+        }
+
+        public int GetByUserId(string userId)
+        {
+            return _dbContext.Donations.Last(d => d.UserId == userId).Id;
         }
 
         public void EnsurePlansExist()
         {
             var planService = new StripePlanService(_stripeSettings.Value.SecretKey);
+
             var options = new DonationViewModel().DonationOptions;
             foreach (var cycle in GetCycles())
             {
@@ -69,36 +95,35 @@ namespace Stripe.Services
                 {
                     if (cycle.Key != PaymentCycle.OneOff)
                     {
-                        if (option.Amount == 0)
+                        if (option.Amount > 0)
                         {
-                            var planName = $"{cycle.Value}_custom";
+                            var planName = $"{cycle.Value}_{option.Amount}".ToLower();
                             var plan = new StripePlanCreateOptions
                             {
                                 Id = planName,
-                                Amount = option.Amount,
+                                Amount = option.Amount * 100,
                                 Currency = "usd",
-                                Interval = cycle.Key.ToString().ToLower(),
+                                Interval = cycle.Key.ToString().ToLower(), // day/month/year
                                 Name = planName
                             };
-                            if (planService.Get(planName) == null)
-                                planService.Create(plan);
-                        }
-                        else
-                        {
-                            var planName = $"{cycle.Value}_{option.Amount}";
-                            var plan = new StripePlanCreateOptions
-                            {
-                                Id = planName,
-                                Amount = option.Amount,
-                                Currency = "usd",
-                                Interval = cycle.Key.ToString().ToLower(),
-                                Name = planName
-                            };
-                            if (planService.Get(planName) == null)
+                            if (!Exists(planService, planName))
                                 planService.Create(plan);
                         }
                     }
                 }
+            }
+        }
+
+        private bool Exists(StripePlanService planService, string planName)
+        {
+            try
+            {
+                planService.Get(planName);
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 

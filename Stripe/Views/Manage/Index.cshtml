@@ -20,7 +20,6 @@
                 <div class="tabbable">
                     <ul class="nav nav-tabs" data-tabs="tabs" id="account-tabs">
                         <li class="active"><a data-toggle="tab" href="#password">Password</a></li>
-                        <li><a data-toggle="tab" href="#subscriptions">Subscriptions</a></li>
                         <li><a data-toggle="tab" href="#logins">External Logins</a></li>
                     </ul>
 
@@ -67,14 +66,6 @@
 
 
                             </dl>
-                        </div>
-                        
-                        <div class="tab-pane" id="subscriptions">
-                            <div>
-                                <h4>Subscriptions</h4>
-                                <hr />
-                                @await Html.PartialAsync("_SubscriptionsPartial", Model.UserId)
-                            </div>
                         </div>
 
                         <div class="tab-pane" id="logins">

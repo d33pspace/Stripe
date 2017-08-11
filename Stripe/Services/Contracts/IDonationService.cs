@@ -10,6 +10,7 @@ namespace Stripe.Services
         Donation GetById(int id);
         IEnumerable<string> GetPlans();
         void EnsurePlansExist();
-        StripePlan GetPlan(Donation donation);
+        StripePlan GetOrCreatePlan(Donation donation);
+        int GetByUserId(string userId);
     }
 }
