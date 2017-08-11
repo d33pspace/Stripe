@@ -67,11 +67,6 @@ namespace Stripe.Models
             return DonationOptions[SelectedAmount - 1].Reason;
         }
 
-        public bool IsCustom()
-        {
-            return SelectedAmount == 3;
-        }
-
         public static implicit operator DonationViewModel(Donation donation)
         {
             return new DonationViewModel

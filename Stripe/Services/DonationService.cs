@@ -37,25 +37,20 @@ namespace Stripe.Services
             return _dbContext.Donations.Find(id);
         }
 
-        public IEnumerable<string> GetPlans()
-        {
-            var options = new DonationViewModel().DonationOptions;
-            foreach (var cycle in GetCycles())
-                foreach(var option in options)
-                    if (cycle.Key != PaymentCycle.OneOff)
-                        if(option.Amount == 0)
-                            yield return $"{cycle.Value}_custom";
-                        else
-                            yield return $"{cycle.Value}_{option.Amount}";
-        }
-
+        /// <summary>
+        /// Create plan for this donation if is does not exist and return its instance. If it does exist
+        /// return the instance.
+        /// </summary>
+        /// <param name="donation"></param>
+        /// <returns></returns>
         public StripePlan GetOrCreatePlan(Donation donation)
         {
             var planService = new StripePlanService(_stripeSettings.Value.SecretKey);
 
+            // Construct plan name from the selected donation type and the cycle
             var cycle = EnumInfo<PaymentCycle>.GetValue(donation.CycleId);
             var frequency = EnumInfo<PaymentCycle>.GetDescription(cycle);
-            var amount = donation.DonationAmount != null ? donation.DonationAmount.Value : 0;
+            var amount = donation.DonationAmount ?? 0;
             if (donation.DonationAmount == null)
             {
                 var model = (DonationViewModel) donation;
@@ -63,6 +58,7 @@ namespace Stripe.Services
             }
             var planName = $"{frequency}_{amount}".ToLower();
 
+            // Create new plan is this one does not exist
             if (!Exists(planService, planName))
             {
                 var plan = new StripePlanCreateOptions
@@ -70,7 +66,7 @@ namespace Stripe.Services
                     Id = planName,
                     Amount = amount * 100,
                     Currency = "usd",
-                    Interval = frequency, // day/month/year
+                    Interval = frequency, // day/month/year 
                     Name = planName
                 };
                 return planService.Create(plan);
@@ -84,6 +80,10 @@ namespace Stripe.Services
             return _dbContext.Donations.Last(d => d.UserId == userId).Id;
         }
 
+        /// <summary>
+        /// Automatically create the standard plans to enable, new users to be able to subscribe. These
+        /// are managed in Stripe
+        /// </summary>
         public void EnsurePlansExist()
         {
             var planService = new StripePlanService(_stripeSettings.Value.SecretKey);
@@ -114,6 +114,13 @@ namespace Stripe.Services
             }
         }
 
+        /// <summary>
+        /// Check is the plan exists. The API does not have an exists endpoint so we have to use an
+        /// exception to detemine existence. 
+        /// </summary>
+        /// <param name="planService">The StripePlanService Instance</param>
+        /// <param name="planName">The Plan name</param>
+        /// <returns></returns>
         private bool Exists(StripePlanService planService, string planName)
         {
             try
