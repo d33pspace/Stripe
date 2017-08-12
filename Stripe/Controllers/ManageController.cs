@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -53,6 +54,9 @@ namespace Stripe.Controllers
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
+            var tempMessage = HttpContext.Session.GetString("tempMessage");
+            HttpContext.Session.Remove("tempMessage");
+
             var user = await GetCurrentUserAsync();
             if (user == null)
             {
@@ -66,7 +70,8 @@ namespace Stripe.Controllers
                 Logins = await _userManager.GetLoginsAsync(user),
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 UserId = user.Id,
-                TokenId = user.StripeCustomerId
+                TokenId = user.StripeCustomerId,
+                Message = tempMessage
             };
             return View(model);
         }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -25,7 +26,7 @@ namespace Stripe.Controllers
             var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
             var result = subscriptionService.Cancel(subscriptionId);
 
-            ViewBag.Message = "You have sccessfully deleted subscription";
+            HttpContext.Session.SetString("tempMessage", "You have successfully deleted subscription");
             return RedirectToAction("Index", "Manage");
         }
 

@@ -6,10 +6,10 @@
 <h2>@ViewData["Title"].</h2>
 <p class="text-success">@ViewData["StatusMessage"]</p>
 
-@if (ViewBag.Message != null)
+@if (Model.Message != null)
 {
     <div class="alert alert-info">
-        <p>ViewBag.Message</p>
+        <p>@Model.Message</p>
     </div>
 }
 
