@@ -1,6 +1,6 @@
 namespace Stripe.Models
 {
-    public class SubscriptionViewModel
+    public class CustomerSubscriptionViewModel
     {
         public string Name { get; set; }
         public string Id { get; set; }

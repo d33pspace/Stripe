@@ -15,7 +15,7 @@ using Stripe.Services;
 namespace Stripe.Controllers
 {
     [Authorize]
-    public class ManageController : Controller
+    public class ManageController : BaseController
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -54,9 +54,6 @@ namespace Stripe.Controllers
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
-            var tempMessage = HttpContext.Session.GetString("tempMessage");
-            HttpContext.Session.Remove("tempMessage");
-
             var user = await GetCurrentUserAsync();
             if (user == null)
             {
@@ -71,7 +68,7 @@ namespace Stripe.Controllers
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 UserId = user.Id,
                 TokenId = user.StripeCustomerId,
-                Message = tempMessage
+                Message = GetTempMessage()
             };
             return View(model);
         }

@@ -35,7 +35,7 @@ namespace Stripe.ViewComponents
                 var customerSubscription = new CustomerPaymentViewModel
                 {
                     UserName = user.Email,
-                    Subscriptions = subscriptions.Select(s => new SubscriptionViewModel
+                    Subscriptions = subscriptions.Select(s => new CustomerSubscriptionViewModel
                     {
                         Id = s.Id,
                         Name = s.StripePlan.Name,
@@ -49,7 +49,7 @@ namespace Stripe.ViewComponents
             var subscription = new CustomerPaymentViewModel
             {
                 UserName = user.Email,
-                Subscriptions = new List<SubscriptionViewModel>()
+                Subscriptions = new List<CustomerSubscriptionViewModel>()
             };
             return View(subscription);
         }

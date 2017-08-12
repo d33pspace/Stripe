@@ -13,7 +13,7 @@ using Stripe.Services;
 
 namespace Stripe.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IDonationService _donationService;
@@ -87,20 +87,6 @@ namespace Stripe.Controllers
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
             }
             return RedirectToAction("CreditCard", "Donation", new { id = model.Id });
-        }
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
         }
 
         public IActionResult Error()
