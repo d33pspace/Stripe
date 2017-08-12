@@ -28,89 +28,57 @@ namespace Stripe.Controllers
             _stripeSettings = stripeSettings;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            var user = await GetCurrentUserAsync();
-            var id = _donationService.GetByUserId(user.Id);
-
-            if (!string.IsNullOrEmpty(user.StripeCustomerId))
-            {
-                var customerService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
-                var subscriptions = customerService.List(user.StripeCustomerId);
-
-                var customerSubscription = new CustomerSubscriptionViewModel
-                {
-                    DonationId = id,
-                    UserName = user.Email,
-                    Subscriptions = subscriptions.Select(s => new SubscriptionViewModel
-                    {
-                        Id = s.Id,
-                        Name = s.StripePlan.Name,
-                        Amount = s.StripePlan.Amount,
-                        Currency = s.StripePlan.Currency,
-                        Status = s.Status
-                    }).ToList()
-                };
-                return View("Index", customerSubscription);
-            }
-            var subscription = new CustomerSubscriptionViewModel
-            {
-                DonationId = id,
-                UserName = user.Email,
-                Subscriptions = new List<SubscriptionViewModel>()
-            };
-            return View("Index", subscription);
-        }
-
-        [AllowAnonymous]
-        public IActionResult Payment(int id)
+        public IActionResult CreditCard(int id)
         {
             var donation = _donationService.GetById(id);
-            if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
+            var model = new CustomerPaymentViewModel
             {
-                var model = (DonationViewModel)donation;
-                return View("Payment", model);
-            }
-            return RedirectToAction("Index");
+                DonationId = donation.Id,
+                CycleId = donation.CycleId
+            };
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Payment(CustomerSubscriptionViewModel model)
+        public async Task<IActionResult> CreditCard(CustomerPaymentViewModel payment)
         {
+            if (!ModelState.IsValid)
+                return View();
+
             var user = await GetCurrentUserAsync();
-            var donation = _donationService.GetById(model.DonationId);
-            var plan = _donationService.GetOrCreatePlan(donation);
-
-            var customer = new StripeCustomerCreateOptions();
-            customer.Email = user.Email;
-            customer.Description = $"{user.Email} {user.Id}";
-            customer.SourceCard = new SourceCard
+            var donation = _donationService.GetById(payment.DonationId);
+            if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
             {
-                Number = model.CardNumber,
-                Cvc = model.Cvc,
-                ExpirationMonth = model.ExpiryMonth,
-                ExpirationYear = model.ExpiryYear
-            };
+                var model = (DonationViewModel)donation;
 
-            var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
-            var stripeCustomer = customerService.Create(customer);
+                return View("Thanks");
+            }
+            else
+            {
+                // Add to subscription
+                var plan = _donationService.GetOrCreatePlan(donation);
+                var customer = new StripeCustomerCreateOptions();
+                customer.Email = user.Email;
+                customer.Description = $"{user.Email} {user.Id}";
+                customer.SourceCard = new SourceCard
+                {
+                    Number = payment.CardNumber,
+                    Cvc = payment.Cvc,
+                    ExpirationMonth = payment.ExpiryMonth,
+                    ExpirationYear = payment.ExpiryYear
+                };
 
-            var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
-            subscriptionService.Create(stripeCustomer.Id, plan.Id);
+                var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+                var stripeCustomer = customerService.Create(customer);
 
-            // update user
-            user.StripeCustomerId = stripeCustomer.Id;
-            await _userManager.UpdateAsync(user);
+                var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
+                subscriptionService.Create(stripeCustomer.Id, plan.Id);
 
-            var list = stripeCustomer.Subscriptions;
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult Delete(string subscriptionId)
-        {
-            var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
-            subscriptionService.Cancel(subscriptionId);
-            return RedirectToAction("Index");
+                // update user
+                user.StripeCustomerId = stripeCustomer.Id;
+                await _userManager.UpdateAsync(user);
+            }
+            return View("Thanks");
         }
 
         [HttpPost]
@@ -153,7 +121,7 @@ namespace Stripe.Controllers
         public string Status { get; set; }
     }
 
-    public class CustomerSubscriptionViewModel
+    public class CustomerPaymentViewModel
     {
         public string UserName { get; set; }
         public List<SubscriptionViewModel> Subscriptions { get; set; }
@@ -162,5 +130,6 @@ namespace Stripe.Controllers
         public int ExpiryMonth { get; set; }
         public int ExpiryYear { get; set; }
         public int DonationId { get; set; }
+        public string CycleId { get; set; }
     }
 }

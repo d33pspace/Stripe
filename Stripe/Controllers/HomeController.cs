@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -33,28 +34,16 @@ namespace Stripe.Controllers
             return View(model);
         }
 
-        /// <summary>
-        /// Executed when the user has now been authenticated and the user wants to access their subscriptions
-        /// </summary>
-        /// <returns></returns>
+        [Authorize]
         public async Task<IActionResult> Create()
         {
-            if (User.Identity.IsAuthenticated)
+            var value = HttpContext.Session.GetString(SessionKey);
+            if (!string.IsNullOrEmpty(value))
             {
-                var value = HttpContext.Session.GetString(SessionKey);
-                if (!string.IsNullOrEmpty(value))
-                {
-                    var user = await GetCurrentUserAsync();
-                    var model = JsonConvert.DeserializeObject<Donation>(value);
-                    model.User = user;
-                    model.UserId = user.Id;
-                    model.TransactionDate = DateTime.Now;
-
-                    _donationService.Save(model);
-                    return RedirectToAction("Payment", "Donation", new { Id = model.Id });
-                }
+                var model = JsonConvert.DeserializeObject<Donation>(value);
+                return RedirectToAction("CreditCard", "Donation", new { Id = model.Id });
             }
-            return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
+            return NotFound();
         }
 
 
@@ -77,19 +66,14 @@ namespace Stripe.Controllers
                 return View("Index", donation);
             }
 
-            Donation model;
-            if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
+            var model = new Donation
             {
-                model = new Donation
-                {
-                    CycleId = donation.CycleId,
-                    DonationAmount = donation.DonationAmount,
-                    SelectedAmount = donation.SelectedAmount,
-                    TransactionDate = DateTime.Now
-                };
-                _donationService.Save(model);
-                return RedirectToAction("Payment", "Donation", new { Id = model.Id });
-            }
+                CycleId = donation.CycleId,
+                DonationAmount = donation.DonationAmount,
+                SelectedAmount = donation.SelectedAmount,
+                TransactionDate = DateTime.Now
+            };
+            _donationService.Save(model);
 
             // If user is not authenticated, lets save the details on the session cache and we get them after authentication
             if (!User.Identity.IsAuthenticated)
@@ -97,28 +81,12 @@ namespace Stripe.Controllers
                 var value = HttpContext.Session.GetString(SessionKey);
                 if (string.IsNullOrEmpty(value))
                 {
-                    var donationView = JsonConvert.SerializeObject(donation);
-                    HttpContext.Session.SetString(SessionKey, donationView);
+                    var donationJson = JsonConvert.SerializeObject(model);
+                    HttpContext.Session.SetString(SessionKey, donationJson);
                 }
-
-                // This will redirect to "Create" action method when the user has been redirected after authentication
-                // as they will be required to authenticate before they can use their subscriptions
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
             }
-
-            // User has logged in
-            var user = await GetCurrentUserAsync();
-            model = new Donation
-            {
-                CycleId = donation.CycleId,
-                DonationAmount = donation.DonationAmount,
-                SelectedAmount = donation.SelectedAmount,
-                TransactionDate = DateTime.Now,
-                User = user,
-                UserId = user.Id
-            };
-            _donationService.Save(model);
-            return RedirectToAction("Index", "Donation");
+            return RedirectToAction("CreditCard", "Donation", new { id = model.Id });
         }
 
         public IActionResult About()

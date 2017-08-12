@@ -19,12 +19,20 @@
 
                 <div class="tabbable">
                     <ul class="nav nav-tabs" data-tabs="tabs" id="account-tabs">
-                        <li class="active"><a data-toggle="tab" href="#password">Password</a></li>
+                        <li class="active"><a data-toggle="tab" href="#subscriptions">Subscriptions</a></li>
+                        <li><a data-toggle="tab" href="#password">Password</a></li>
                         <li><a data-toggle="tab" href="#logins">External Logins</a></li>
                     </ul>
 
                     <div class="tab-content">
-                        <div class="tab-pane active" id="password">
+                        
+                        <div class="tab-pane  active" id="subscriptions">
+                            
+                            @await Component.InvokeAsync("Subscriptions")
+            
+                        </div>
+
+                        <div class="tab-pane" id="password">
                             <dl class="dl-horizontal">
                                 <dt>Password:</dt>
                                 <dd>
