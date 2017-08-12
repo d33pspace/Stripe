@@ -41,7 +41,7 @@ namespace Stripe.Controllers
             if (!string.IsNullOrEmpty(value))
             {
                 var model = JsonConvert.DeserializeObject<Donation>(value);
-                return RedirectToAction("CreditCard", "Donation", new { Id = model.Id });
+                return RedirectToAction("Payment", "Donation", new { Id = model.Id });
             }
             return NotFound();
         }
@@ -86,7 +86,7 @@ namespace Stripe.Controllers
                 }
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
             }
-            return RedirectToAction("CreditCard", "Donation", new { id = model.Id });
+            return RedirectToAction("Payment", "Donation", new { id = model.Id });
         }
 
         public IActionResult Error()

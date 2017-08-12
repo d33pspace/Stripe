@@ -77,7 +77,7 @@ namespace Stripe.Services
                 }
                 else
                 {
-                    plan.Interval = frequency; // day/month/year 
+                    plan.Interval = cycle.ToString().ToLower(); // day/month/year 
                 }
                 return planService.Create(plan);
             }

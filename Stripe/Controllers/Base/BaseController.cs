@@ -9,7 +9,7 @@ namespace Stripe.Controllers
 
         public string GetTempMessage()
         {
-            var tempMessage = HttpContext.Session.GetString("tempMessage");
+            var tempMessage = HttpContext.Session.GetString(TempMessage);
             HttpContext.Session.Remove(TempMessage);
             return tempMessage;
         }

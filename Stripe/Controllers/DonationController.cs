@@ -28,7 +28,7 @@ namespace Stripe.Controllers
             _stripeSettings = stripeSettings;
         }
 
-        public IActionResult CreditCard(int id)
+        public IActionResult Payment(int id)
         {
             var donation = _donationService.GetById(id);
             var model = new CustomerPaymentViewModel
@@ -39,7 +39,7 @@ namespace Stripe.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreditCard(CustomerPaymentViewModel payment)
+        public async Task<IActionResult> Payment(CustomerPaymentViewModel payment)
         {
             if (!ModelState.IsValid)
             {
@@ -101,6 +101,7 @@ namespace Stripe.Controllers
             {
                 // Add to existing subscriptions and charge 
                 var plan = _donationService.GetOrCreatePlan(donation);
+
                 var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
                 var result = subscriptionService.Create(user.StripeCustomerId, plan.Id);
                 if (result != null)
