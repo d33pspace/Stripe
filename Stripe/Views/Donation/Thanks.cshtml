@@ -1,7 +1,7 @@
-﻿@model object
+﻿@model Stripe.Controllers.CompletedViewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Thank you";
 }
 
-<h2>Thanks you for your payment</h2>
+<h2>@Model.Message</h2>

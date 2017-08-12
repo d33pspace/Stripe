@@ -23,8 +23,11 @@ namespace Stripe.Controllers
         public IActionResult Delete(string subscriptionId)
         {
             var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
-            subscriptionService.Cancel(subscriptionId);
-            return RedirectToAction("PostDeleteSubscription");
+            var result = subscriptionService.Cancel(subscriptionId);
+
+            ViewBag.Message = "You have sccessfully deleted subscription";
+            return RedirectToAction("Index", "Manage");
         }
+
     }
 }
