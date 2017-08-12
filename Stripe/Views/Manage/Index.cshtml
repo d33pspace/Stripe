@@ -6,6 +6,13 @@
 <h2>@ViewData["Title"].</h2>
 <p class="text-success">@ViewData["StatusMessage"]</p>
 
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-info">
+        <p>ViewBag.Message</p>
+    </div>
+}
+
 <div class="row">
     <div class="span9">
         <div class="widget" id="manage-account">

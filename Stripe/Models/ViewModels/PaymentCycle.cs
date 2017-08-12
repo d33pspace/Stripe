@@ -6,10 +6,10 @@ namespace Stripe.Services
     {
         [Description("One Off")]
         OneOff = 1,
-        [Description("Weekly")]
-        Day = 2,
         [Description("Monthly")]
-        Month = 3,
+        Month = 2,
+        [Description("Quarterly")]
+        Quarter = 3,
         [Description("Yearly")]
         Year = 4
     }

@@ -1,12 +1,5 @@
 ﻿@model Stripe.Models.CustomerPaymentViewModel
 
-@if (ViewBag.Message != null)
-{
-    <div class="alert alert-info">
-        <p>ViewBag.Message</p>
-    </div>
-}
-
 <div class="col-lg-12">
 
     @if (Model.Subscriptions == null || !Model.Subscriptions.Any())
@@ -35,7 +28,7 @@
                     <td>@subscription.Currency</td>
                     <td>@(subscription.Amount / 100)</td>
                     <td>@subscription.Status</td>
-                    <td><a class="btn btn-primary" asp-action="Delete" asp-route-subscriptionId=@subscription.Id>Delete</a></td>
+                    <td><a class="btn btn-primary" asp-action="Delete" asp-controller="Subscription" asp-route-subscriptionId=@subscription.Id>Delete</a></td>
                 </tr>
             }
             </tbody>

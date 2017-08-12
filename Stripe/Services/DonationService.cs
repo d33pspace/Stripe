@@ -66,9 +66,19 @@ namespace Stripe.Services
                     Id = planName,
                     Amount = amount * 100,
                     Currency = "usd",
-                    Interval = frequency, // day/month/year 
                     Name = planName
                 };
+
+                // Take care intervals
+                if (cycle == PaymentCycle.Quarter)
+                {
+                    plan.IntervalCount = 3;
+                    plan.Interval = "month";
+                }
+                else
+                {
+                    plan.Interval = frequency; // day/month/year 
+                }
                 return planService.Create(plan);
             }
             else
@@ -103,9 +113,20 @@ namespace Stripe.Services
                                 Id = planName,
                                 Amount = option.Amount * 100,
                                 Currency = "usd",
-                                Interval = cycle.Key.ToString().ToLower(), // day/month/year
                                 Name = planName
                             };
+
+                            // Take care intervals
+                            if (cycle.Key == PaymentCycle.Quarter)
+                            {
+                                plan.IntervalCount = 3;
+                                plan.Interval = "month";
+                            }
+                            else
+                            {
+                                plan.Interval = cycle.Key.ToString().ToLower(); // day/month/year 
+                            }
+
                             if (!Exists(planService, planName))
                                 planService.Create(plan);
                         }
