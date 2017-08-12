@@ -57,6 +57,7 @@ namespace Stripe.Controllers
                 Description = $"{user.Email} {user.Id}",
                 SourceCard = new SourceCard
                 {
+                    Name = payment.Name,
                     Number = payment.CardNumber,
                     Cvc = payment.Cvc,
                     ExpirationMonth = payment.ExpiryMonth,

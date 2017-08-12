@@ -1,4 +1,4 @@
-﻿@model Stripe.Controllers.CustomerPaymentViewModel
+﻿@model Stripe.Models.CustomerPaymentViewModel
 
 @if (ViewBag.Message != null)
 {
@@ -42,4 +42,4 @@
         </table>
     }
 </div>
-<a asp-action="NewSubscription" asp-controller="Manage" class="btn btn-default">Add New Subscription</a>
+<a asp-action="Index" asp-controller="Home" class="btn btn-default">Add New Subscription</a>

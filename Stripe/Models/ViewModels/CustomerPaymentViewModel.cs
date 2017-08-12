@@ -12,5 +12,6 @@ namespace Stripe.Models
         public int ExpiryYear { get; set; }
         public int DonationId { get; set; }
         public string CycleId { get; set; }
+        public string Name { get; set; }
     }
 }
