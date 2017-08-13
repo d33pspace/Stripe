@@ -10,22 +10,26 @@
         <fieldset>
             <legend>Donation</legend>
             
+            <div asp-validation-summary="All" class="text-danger"></div>
+
             <input hidden asp-for="DonationId"/>
 
             <div class="form-group">
-                <label class="col-sm-3 control-label" for="card-holder-name">Name on Card</label>
+                <label class="col-sm-3 control-label" asp-for="Name"></label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" asp-for="Name" placeholder="Card Holder's Name">
+                    <input type="text" class="form-control" asp-for="Name">
+                    <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-3 control-label" for="card-number">Card Number</label>
+                <label class="col-sm-3 control-label" asp-for="CardNumber"></label>
                 <div class="col-sm-9">
                     <input type="text" class="form-control" asp-for="CardNumber" placeholder="Debit/Credit Card Number">
+                    <span asp-validation-for="CardNumber" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-3 control-label" for="expiry-month">Expiration Date</label>
+                <label class="col-sm-3 control-label" asp-for="ExpiryMonth"></label>
                 <div class="col-sm-9">
                     <div class="row">
                         <div class="col-xs-3">
@@ -56,13 +60,16 @@
                                 <option value="23">2023</option>
                             </select>
                         </div>
+                        <span asp-validation-for="ExpiryMonth" class="text-danger"></span>
+                        <span asp-validation-for="ExpiryYear" class="text-danger"></span>
                     </div>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-3 control-label" for="cvc">Card CVV</label>
+                <label class="col-sm-3 control-label" asp-for="Cvc"></label>
                 <div class="col-sm-3">
                     <input type="text" class="form-control" asp-for="Cvc" placeholder="CVC">
+                    <span asp-validation-for="Cvc" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">

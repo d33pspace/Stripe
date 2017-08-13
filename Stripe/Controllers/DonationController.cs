@@ -41,9 +41,13 @@ namespace Stripe.Controllers
         [HttpPost]
         public async Task<IActionResult> Payment(CustomerPaymentViewModel payment)
         {
+            // Can be better
+            if((payment.ExpiryYear + 2000) == DateTime.Now.Year && payment.ExpiryMonth <= DateTime.Now.Month)
+                ModelState.AddModelError("expiredCard", "Expired card");
+
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(payment);
             }
 
             var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
@@ -84,7 +88,8 @@ namespace Stripe.Controllers
                     Amount = model.GetAmount(),
                     Description = model.GetFullDescription(),
                     Currency = "usd",
-                    CustomerId = user.StripeCustomerId
+                    CustomerId = user.StripeCustomerId,
+                    ReceiptEmail = user.Email
                 });
 
                 if (charge.Paid)
