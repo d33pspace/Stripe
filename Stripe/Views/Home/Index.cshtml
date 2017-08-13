@@ -10,7 +10,7 @@
 
 <form asp-controller="Home" asp-action="Create">
     
-    @Html.ValidationSummary()
+    <div asp-validation-summary="All" class="text-danger"></div>
 
     <p>I would like to make a </p>
 
