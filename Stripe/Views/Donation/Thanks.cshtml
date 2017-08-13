@@ -3,5 +3,13 @@
 @{
     ViewBag.Title = "Thank you";
 }
+<div>
+    <h3>@Model.Message</h3>
+</div>
 
-<h2>@Model.Message</h2>
+@if (Model.HasSubscriptions)
+{
+    <p>
+        <a asp-controller="Manage" asp-action="Index">View My Subscriptions</a>
+    </p>
+}

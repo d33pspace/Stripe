@@ -108,7 +108,8 @@ namespace Stripe.Controllers
                 {
                     var completedMessage = new CompletedViewModel
                     {
-                        Message = $"You have added a subscription {result.StripePlan.Name} for this donation"
+                        Message = $"You have added a subscription {result.StripePlan.Name} for this donation",
+                        HasSubscriptions = true 
                     };
                     return View("Thanks", completedMessage);
                 }
