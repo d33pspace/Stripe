@@ -80,9 +80,6 @@ namespace Stripe
                 .AddRedirectToHttps();
             */
 
-            // Create plans on Stripe side
-            donationService.EnsurePlansExist();
-
             app.UseSession();
 
             if (env.IsDevelopment())
