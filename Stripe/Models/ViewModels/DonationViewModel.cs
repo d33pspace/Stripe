@@ -31,6 +31,11 @@ namespace Stripe.Models
             };
         }
 
+        public DonationViewModel(List<DonationListOption> donationOptions)
+        {
+            DonationOptions = donationOptions;
+        }
+
         public int GetAmount()
         {
             if (DonationAmount > 0)
