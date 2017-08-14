@@ -65,7 +65,8 @@ namespace Stripe.Controllers
                     Number = payment.CardNumber,
                     Cvc = payment.Cvc,
                     ExpirationMonth = payment.ExpiryMonth,
-                    ExpirationYear = payment.ExpiryYear
+                    ExpirationYear = payment.ExpiryYear,
+                    StatementDescriptor = _stripeSettings.Value.StatementDescriptor
                 }
             };
 
@@ -89,7 +90,8 @@ namespace Stripe.Controllers
                     Description = model.GetFullDescription(),
                     Currency = "usd",
                     CustomerId = user.StripeCustomerId,
-                    ReceiptEmail = user.Email
+                    ReceiptEmail = user.Email,
+                    StatementDescriptor = _stripeSettings.Value.StatementDescriptor
                 });
 
                 if (charge.Paid)

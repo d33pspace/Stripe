@@ -11,5 +11,6 @@ namespace Stripe.Services
         void EnsurePlansExist();
         StripePlan GetOrCreatePlan(Donation donation);
         int GetByUserId(string userId);
+        List<DonationListOption> DonationOptions { get; }
     }
 }

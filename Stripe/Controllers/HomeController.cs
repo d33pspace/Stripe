@@ -27,7 +27,7 @@ namespace Stripe.Controllers
 
         public IActionResult Index()
         {
-            var model = new DonationViewModel
+            var model = new DonationViewModel(_donationService.DonationOptions)
             {
                 DonationCycles = GetDonationCycles
             };
@@ -50,6 +50,8 @@ namespace Stripe.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(DonationViewModel donation)
         {
+            donation.DonationOptions = _donationService.DonationOptions;
+
             if (Math.Abs(donation.GetAmount()) < 1)
             {
                 ModelState.AddModelError("amount", "Donation amount cannot be zero or less");

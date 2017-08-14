@@ -26,6 +26,14 @@ namespace Stripe.Services
                 .ToDictionary(o => o.Key, o => o.Value);
         }
 
+        public List<DonationListOption> DonationOptions => new List<DonationListOption>
+        {
+            new DonationListOption {Id = 1, Amount = 18, Reason = "to provide one day of showers, laundry and care for five people."},
+            new DonationListOption {Id = 2, Amount = 63, Reason = "to provide a week of shelter and training for one person."},
+            new DonationListOption {Id = 3, Amount = 200, Reason = "towards shower renovations or the purchase of a new van."},
+            new DonationListOption {Id = 4, Amount = 0, Reason = "to help as many people as possible today!", IsCustom = true},
+        };
+
         public void Save(Donation donation)
         {
             _dbContext.Donations.Add(donation);
@@ -54,6 +62,8 @@ namespace Stripe.Services
             if (donation.DonationAmount == null)
             {
                 var model = (DonationViewModel) donation;
+                model.DonationOptions = DonationOptions;
+
                 amount = model.GetDisplayAmount();
             }
             var planName = $"{frequency}_{amount}".ToLower();
@@ -99,7 +109,7 @@ namespace Stripe.Services
         {
             var planService = new StripePlanService(_stripeSettings.Value.SecretKey);
 
-            var options = new DonationViewModel().DonationOptions;
+            var options = new DonationViewModel(DonationOptions).DonationOptions;
             foreach (var cycle in GetCycles())
             {
                 foreach (var option in options)
