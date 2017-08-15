@@ -28,9 +28,9 @@ namespace Stripe.Services
 
         public List<DonationListOption> DonationOptions => new List<DonationListOption>
         {
-            new DonationListOption {Id = 1, Amount = 18, Reason = "to provide one day of showers, laundry and care for five people."},
-            new DonationListOption {Id = 2, Amount = 63, Reason = "to provide a week of shelter and training for one person."},
-            new DonationListOption {Id = 3, Amount = 200, Reason = "towards shower renovations or the purchase of a new van."},
+            new DonationListOption {Id = 1, Amount = 25, Reason = "to provide one day of showers, laundry and care for five people."},
+            new DonationListOption {Id = 2, Amount = 50, Reason = "to provide a week of shelter and training for one person."},
+            new DonationListOption {Id = 3, Amount = 100, Reason = "towards shower renovations or the purchase of a new van."},
             new DonationListOption {Id = 4, Amount = 0, Reason = "to help as many people as possible today!", IsCustom = true},
         };
 

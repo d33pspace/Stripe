@@ -13,6 +13,7 @@ using Stripe.Data;
 using Stripe.Models;
 using Stripe.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace Stripe
 {
@@ -75,10 +76,8 @@ namespace Stripe
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            /* TODO: Enforce SSL
             var options = new RewriteOptions()
                 .AddRedirectToHttps();
-            */
 
             app.UseSession();
 
