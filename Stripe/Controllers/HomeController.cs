@@ -52,6 +52,12 @@ namespace Stripe.Controllers
         {
             donation.DonationOptions = _donationService.DonationOptions;
 
+            if (donation.SelectedAmount == 0) //Could be better
+            {
+                ModelState.AddModelError("amount", "Select amount");
+            }
+
+
             if (Math.Abs(donation.GetAmount()) < 1)
             {
                 ModelState.AddModelError("amount", "Donation amount cannot be zero or less");

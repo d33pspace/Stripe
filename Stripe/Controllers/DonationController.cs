@@ -28,11 +28,18 @@ namespace Stripe.Controllers
             _stripeSettings = stripeSettings;
         }
 
-        public IActionResult Payment(int id)
+        public async Task<IActionResult> Payment(int id)
         {
+            var user = await GetCurrentUserAsync();
             var donation = _donationService.GetById(id);
             var model = new CustomerPaymentViewModel
             {
+                AddressLine1 = user.AddressLine1,
+                AddressLine2 = user.AddressLine2,
+                City = user.City,
+                State = user.State,
+                Country = user.Country,
+                Zip = user.Zip,
                 DonationId = donation.Id,
             };
             return View(model);
@@ -41,17 +48,23 @@ namespace Stripe.Controllers
         [HttpPost]
         public async Task<IActionResult> Payment(CustomerPaymentViewModel payment)
         {
+            var user = await GetCurrentUserAsync();
             // Can be better
-            if((payment.ExpiryYear + 2000) == DateTime.Now.Year && payment.ExpiryMonth <= DateTime.Now.Month)
+            if ((payment.ExpiryYear + 2000) == DateTime.Now.Year && payment.ExpiryMonth <= DateTime.Now.Month)
                 ModelState.AddModelError("expiredCard", "Expired card");
 
             if (!ModelState.IsValid)
             {
+                payment.AddressLine1 = user.AddressLine1;
+                payment.AddressLine2 = user.AddressLine2;
+                payment.City = user.City;
+                payment.State = user.State;
+                payment.Country = user.Country;
+                payment.Zip = user.Zip;
                 return View(payment);
             }
 
             var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
-            var user = await GetCurrentUserAsync();
             var donation = _donationService.GetById(payment.DonationId);
 
             // Construct payment
@@ -66,7 +79,14 @@ namespace Stripe.Controllers
                     Cvc = payment.Cvc,
                     ExpirationMonth = payment.ExpiryMonth,
                     ExpirationYear = payment.ExpiryYear,
-                    StatementDescriptor = _stripeSettings.Value.StatementDescriptor
+                    StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
+
+                    AddressLine1 = payment.AddressLine1,
+                    AddressLine2 = payment.AddressLine2,
+                    AddressCity = payment.City,
+                    AddressState = payment.State,
+                    AddressCountry = payment.Country,
+                    AddressZip = payment.Zip
                 }
             };
 
@@ -91,7 +111,7 @@ namespace Stripe.Controllers
                     Currency = "usd",
                     CustomerId = user.StripeCustomerId,
                     ReceiptEmail = user.Email,
-                    StatementDescriptor = _stripeSettings.Value.StatementDescriptor
+                    StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
                 });
 
                 if (charge.Paid)
@@ -104,24 +124,22 @@ namespace Stripe.Controllers
                 }
                 return View("Error");
             }
-            else
-            {
-                // Add to existing subscriptions and charge 
-                var plan = _donationService.GetOrCreatePlan(donation);
 
-                var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
-                var result = subscriptionService.Create(user.StripeCustomerId, plan.Id);
-                if (result != null)
+            // Add to existing subscriptions and charge 
+            var plan = _donationService.GetOrCreatePlan(donation);
+
+            var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
+            var result = subscriptionService.Create(user.StripeCustomerId, plan.Id);
+            if (result != null)
+            {
+                var completedMessage = new CompletedViewModel
                 {
-                    var completedMessage = new CompletedViewModel
-                    {
-                        Message = $"You have added a subscription {result.StripePlan.Name} for this donation",
-                        HasSubscriptions = true 
-                    };
-                    return View("Thanks", completedMessage);
-                }
-                return View("Error");
+                    Message = $"You have added a subscription {result.StripePlan.Name} for this donation",
+                    HasSubscriptions = true 
+                };
+                return View("Thanks", completedMessage);
             }
+            return View("Error");
         }
 
 

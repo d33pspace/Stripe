@@ -10,9 +10,7 @@ namespace Stripe.Models
     // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser
     {
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
+        public string FullName { get; set; }
 
         public string StripeCustomerId { get; set; }
 
@@ -26,7 +24,9 @@ namespace Stripe.Models
 
         public string Zip { get; set; }
 
+        public string Country { get; set; }
+
         public virtual IList<Donation> Donations { get; set; }
-        
+
     }
 }

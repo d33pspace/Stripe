@@ -37,4 +37,16 @@
     <button class="btn btn-success" type="submit">Submit</button>
 </form>
 
+@section Scripts
+{
+    <script language="javascript">
+        // script for on change
+        $(document).ready(function() {
 
+            $('#DonationAmount').change(function () {
+                $('li>input[name="SelectedAmount"]').prop('checked', true);
+            });
+        })
+
+    </script>
+}

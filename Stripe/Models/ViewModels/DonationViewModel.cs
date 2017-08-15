@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Stripe.Models
@@ -22,7 +23,6 @@ namespace Stripe.Models
 
         public DonationViewModel()
         {
-            
         }
 
         public DonationViewModel(List<DonationListOption> donationOptions)
@@ -54,15 +54,15 @@ namespace Stripe.Models
 
         public string GetFullDescription()
         {
-            if (SelectedAmount == 0)
-                return $"{DonationAmount} {DonationOptions[3].Reason}";
+//            if(DonationOptions.First(o => o.IsCustom).Id == SelectedAmount)
+//                return $"{DonationAmount} {DonationOptions.First(o => o.IsCustom).Reason}";
             return $"{DonationOptions[SelectedAmount - 1].Amount} {DonationOptions[SelectedAmount - 1].Reason}";
         }
 
         public string GetDescription()
         {
-            if (SelectedAmount == 0)
-                return DonationOptions[3].Reason;
+//            if (DonationOptions.First(o => o.IsCustom).Id == SelectedAmount)
+//                return DonationOptions[3].Reason;
             return DonationOptions[SelectedAmount - 1].Reason;
         }
 

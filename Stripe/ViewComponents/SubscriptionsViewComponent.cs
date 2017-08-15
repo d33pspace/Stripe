@@ -30,19 +30,19 @@ namespace Stripe.ViewComponents
             if (!string.IsNullOrEmpty(user.StripeCustomerId))
             {
                 var customerService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
-                var subscriptions = customerService.List(user.StripeCustomerId);
+                //var subscriptions = customerService.List(user.StripeCustomerId);
 
                 var customerSubscription = new CustomerPaymentViewModel
                 {
                     UserName = user.Email,
-                    Subscriptions = subscriptions.Select(s => new CustomerSubscriptionViewModel
+                    /*Subscriptions = subscriptions.Select(s => new CustomerSubscriptionViewModel
                     {
                         Id = s.Id,
                         Name = s.StripePlan.Name,
                         Amount = s.StripePlan.Amount,
                         Currency = s.StripePlan.Currency,
                         Status = s.Status
-                    }).ToList()
+                    }).ToList()*/
                 };
                 return View("View", customerSubscription);
             }

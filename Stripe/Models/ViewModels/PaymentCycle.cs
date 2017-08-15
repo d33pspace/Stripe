@@ -4,13 +4,13 @@ namespace Stripe.Services
 {
     public enum PaymentCycle
     {
-        [Description("One Off")]
-        OneOff = 1,
         [Description("Monthly")]
-        Month = 2,
+        Month = 1,
         [Description("Quarterly")]
-        Quarter = 3,
+        Quarter = 2,
         [Description("Yearly")]
-        Year = 4
+        Year = 3,
+        [Description("One Off")]
+        OneOff = 4
     }
 }

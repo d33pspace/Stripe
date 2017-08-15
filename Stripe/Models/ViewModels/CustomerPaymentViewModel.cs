@@ -30,5 +30,25 @@ namespace Stripe.Models
 
         public List<CustomerSubscriptionViewModel> Subscriptions { get; set; }
 
+        // Address
+
+        [Display(Name = "Address Line 1")]
+        public string AddressLine1 { get; set; }
+
+        [Display(Name = "Address Line 2")]
+        public string AddressLine2 { get; set; }
+
+        [Display(Name = "State")]
+        public string State { get; set; }
+
+        [Display(Name = "Zip")]
+        public string Zip { get; set; }
+
+        [Display(Name = "City")]
+        public string City { get; set; }
+
+        [Display(Name = "Country")]
+        public string Country { get; set; }
+
     }
 }

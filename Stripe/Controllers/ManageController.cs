@@ -376,5 +376,27 @@ namespace Stripe.Controllers
         #endregion
 
 
+        // POST: /Manage/RemoveLogin
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveProfile(IndexViewModel profile)
+        {
+            var user = await GetCurrentUserAsync();
+            if (user != null)
+            {
+                user.FullName = profile.FullName;
+                user.AddressLine1 = profile.AddressLine1;
+                user.AddressLine2 = profile.AddressLine2;
+                user.State = profile.State;
+                user.Zip = profile.Zip;
+                user.City = profile.City;
+                user.Country = profile.Country;
+
+                await _userManager.UpdateAsync(user);
+
+                ViewData["StatusMessage"] = "Saved Profile";
+            }
+            return RedirectToAction(nameof(Index), "Manage");
+        }
     }
 }

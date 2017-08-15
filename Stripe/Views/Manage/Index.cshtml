@@ -27,6 +27,7 @@
                 <div class="tabbable">
                     <ul class="nav nav-tabs" data-tabs="tabs" id="account-tabs">
                         <li class="active"><a data-toggle="tab" href="#subscriptions">Subscriptions</a></li>
+                        <li><a data-toggle="tab" href="#profile">Profile</a></li>
                         <li><a data-toggle="tab" href="#password">Password</a></li>
                         <li><a data-toggle="tab" href="#logins">External Logins</a></li>
                     </ul>
@@ -38,6 +39,86 @@
                             @await Component.InvokeAsync("Subscriptions")
             
                         </div>
+                        
+                        <div class="tab-pane" id="profile">
+                            <div>
+                                <h4>Change your profile defaults</h4>
+                                <hr />
+
+                                <form asp-controller="Manage" asp-action="SaveProfile"
+                                      method="post" id="profile-form" role="form">
+                                    
+                                    <div class="form-group">
+                                        <label asp-for="FullName" class="col-md-4 control-label"></label>
+                                        <div class="col-md-10">
+                                            <input asp-for="FullName" class="form-control"/>
+                                            <span asp-validation-for="FullName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="AddressLine1" class="col-md-4 control-label"></label>
+                                        <div class="col-md-10">
+                                            <input asp-for="AddressLine1" class="form-control"/>
+                                            <span asp-validation-for="AddressLine1" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="AddressLine2" class="col-md-4 control-label"></label>
+                                        <div class="col-md-10">
+                                            <input asp-for="AddressLine2" class="form-control"/>
+                                            <span asp-validation-for="AddressLine2" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            
+                                            <div class="form-group">
+                                                <label asp-for="City" class="control-label"></label>
+                                                <div>
+                                                    <input asp-for="City" class="form-control"/>
+                                                    <span asp-validation-for="City" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="form-group">
+                                                <label asp-for="State" class="control-label"></label>
+                                                <div>
+                                                    <input asp-for="State" class="form-control"/>
+                                                    <span asp-validation-for="State" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xs-3">
+                                            <div class="form-group">
+                                                <label asp-for="Zip" class="control-label"></label>
+                                                <div>
+                                                    <input asp-for="Zip" class="form-control"/>
+                                                    <span asp-validation-for="Zip" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="Country" class="col-md-4 control-label"></label>
+                                        <div class="col-md-10">
+                                            <input asp-for="Country" class="form-control"/>
+                                            <span asp-validation-for="Country" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-md-offset-2 col-md-10">
+                                            <input type="submit" value="Save" class="btn btn-default"/>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
 
                         <div class="tab-pane" id="password">
                             <dl class="dl-horizontal">
