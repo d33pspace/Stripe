@@ -55,12 +55,6 @@ namespace Stripe.Controllers
 
             if (!ModelState.IsValid)
             {
-                payment.AddressLine1 = user.AddressLine1;
-                payment.AddressLine2 = user.AddressLine2;
-                payment.City = user.City;
-                payment.State = user.State;
-                payment.Country = user.Country;
-                payment.Zip = user.Zip;
                 return View(payment);
             }
 

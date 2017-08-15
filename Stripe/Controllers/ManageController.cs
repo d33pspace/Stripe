@@ -68,8 +68,16 @@ namespace Stripe.Controllers
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 UserId = user.Id,
                 TokenId = user.StripeCustomerId,
-                Message = GetTempMessage()
+                Message = GetTempMessage(),
+                FullName = user.FullName,
+                AddressLine1 = user.AddressLine1,
+                AddressLine2 = user.AddressLine2,
+                State = user.State,
+                Zip = user.Zip,
+                City = user.City,
+                Country = user.Country
             };
+
             return View(model);
         }
 

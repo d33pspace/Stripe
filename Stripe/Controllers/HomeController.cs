@@ -63,11 +63,6 @@ namespace Stripe.Controllers
                 ModelState.AddModelError("amount", "Donation amount cannot be zero or less");
             }
 
-            if (donation.CycleId == "Please select one") //Could be better
-            {
-                ModelState.AddModelError("cycle", "Donation cycle is required");
-            }
-
             if (!ModelState.IsValid)
             {
                 donation.DonationCycles = GetDonationCycles;
