@@ -95,6 +95,8 @@ namespace Stripe.Controllers
             if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
             {
                 var model = (DonationViewModel)donation;
+                model.DonationOptions = _donationService.DonationOptions;
+
                 var charges = new StripeChargeService(_stripeSettings.Value.SecretKey);
 
                 // Charge the customer
