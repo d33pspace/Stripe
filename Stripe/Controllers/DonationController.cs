@@ -38,6 +38,7 @@ namespace Stripe.Controllers
 
             var model = new CustomerPaymentViewModel
             {
+                Name = user.FullName,
                 AddressLine1 = user.AddressLine1,
                 AddressLine2 = user.AddressLine2,
                 City = user.City,
