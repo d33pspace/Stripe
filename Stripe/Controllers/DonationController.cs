@@ -109,7 +109,7 @@ namespace Stripe.Controllers
                     Description = DonationCaption,
                     Currency = "usd",
                     CustomerId = user.StripeCustomerId,
-                    ReceiptEmail = user.Email,
+                    //ReceiptEmail = user.Email,
                     StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
                 });
 
