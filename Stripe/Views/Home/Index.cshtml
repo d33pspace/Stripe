@@ -43,8 +43,13 @@
         // script for on change
         $(document).ready(function() {
 
-            $('#DonationAmount').focus(function () {
+            $('#DonationAmount').focus(function() {
                 $('li>input[name="SelectedAmount"]').prop('checked', true);
+            });
+
+            $('li:last-child>input:radio[name="SelectedAmount"]')
+                .change(function () {
+                    $('li>input').focus();
             });
 
         })
