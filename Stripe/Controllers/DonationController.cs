@@ -33,6 +33,9 @@ namespace Stripe.Controllers
         {
             var user = await GetCurrentUserAsync();
             var donation = _donationService.GetById(id);
+            var detail = (DonationViewModel)donation;
+            detail.DonationOptions = _donationService.DonationOptions;
+
             var model = new CustomerPaymentViewModel
             {
                 AddressLine1 = user.AddressLine1,
@@ -42,6 +45,9 @@ namespace Stripe.Controllers
                 Country = user.Country,
                 Zip = user.Zip,
                 DonationId = donation.Id,
+                Description = detail.GetDescription(),
+                Frequency = detail.GetCycle(),
+                Amount = detail.GetDisplayAmount()
             };
             return View(model);
         }

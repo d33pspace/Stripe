@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Stripe.Services;
 
 namespace Stripe.Models
 {
@@ -41,6 +42,12 @@ namespace Stripe.Models
             return 0;
         }
 
+        public string GetCycle()
+        {
+            var pc = EnumInfo<PaymentCycle>.GetValue(this.CycleId);
+            return EnumInfo<PaymentCycle>.GetDescription(pc);
+        }
+
         public int GetDisplayAmount()
         {
             if (DonationAmount > 0)
@@ -54,15 +61,11 @@ namespace Stripe.Models
 
         public string GetFullDescription()
         {
-//            if(DonationOptions.First(o => o.IsCustom).Id == SelectedAmount)
-//                return $"{DonationAmount} {DonationOptions.First(o => o.IsCustom).Reason}";
             return $"{DonationOptions[SelectedAmount - 1].Amount} {DonationOptions[SelectedAmount - 1].Reason}";
         }
 
         public string GetDescription()
         {
-//            if (DonationOptions.First(o => o.IsCustom).Id == SelectedAmount)
-//                return DonationOptions[3].Reason;
             return DonationOptions[SelectedAmount - 1].Reason;
         }
 

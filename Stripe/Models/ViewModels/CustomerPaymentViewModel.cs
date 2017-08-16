@@ -50,5 +50,10 @@ namespace Stripe.Models
         [Display(Name = "Country")]
         public string Country { get; set; }
 
+        public string Frequency { get; set; }
+
+        public string Description { get; set; }
+
+        public int Amount { get; set; }
     }
 }
