@@ -14,6 +14,7 @@ namespace Stripe.Controllers
     [Authorize]
     public class DonationController : Controller
     {
+        private const string DonationCaption = "Renewal Center donation";
         private readonly IDonationService _donationService;
         private readonly IOptions<StripeSettings> _stripeSettings;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -103,7 +104,7 @@ namespace Stripe.Controllers
                 var charge = charges.Create(new StripeChargeCreateOptions
                 {
                     Amount = model.GetAmount(),
-                    Description = model.GetFullDescription(),
+                    Description = DonationCaption,
                     Currency = "usd",
                     CustomerId = user.StripeCustomerId,
                     ReceiptEmail = user.Email,
