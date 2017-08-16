@@ -97,8 +97,16 @@ namespace Stripe.Controllers
             {
                 var stripeCustomer = customerService.Create(customer);
                 user.StripeCustomerId = stripeCustomer.Id;
-                await _userManager.UpdateAsync(user);
             }
+
+            user.AddressLine1 = payment.AddressLine1;
+            user.AddressLine2 = payment.AddressLine2;
+            user.City = payment.City;
+            user.State = payment.State;
+            user.Country = payment.Country;
+            user.Zip = payment.Zip;
+            await _userManager.UpdateAsync(user);
+
 
             // Add customer to Stripe
             if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
