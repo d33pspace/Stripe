@@ -99,6 +99,7 @@ namespace Stripe.Controllers
                 user.StripeCustomerId = stripeCustomer.Id;
             }
 
+            user.FullName = payment.Name;
             user.AddressLine1 = payment.AddressLine1;
             user.AddressLine2 = payment.AddressLine2;
             user.City = payment.City;
