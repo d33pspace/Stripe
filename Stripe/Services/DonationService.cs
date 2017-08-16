@@ -76,10 +76,10 @@ namespace Stripe.Services
                     Id = planName,
                     Amount = amount * 100,
                     Currency = "usd",
-                    Name = planName,
+                    Name = planName, 
                     StatementDescriptor = _stripeSettings.Value.StatementDescriptor
                 };
-
+                
                 // Take care intervals
                 if (cycle == PaymentCycle.Quarter)
                 {

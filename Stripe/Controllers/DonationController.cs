@@ -76,6 +76,8 @@ namespace Stripe.Controllers
                     ExpirationYear = payment.ExpiryYear,
                     StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
 
+                    Description = DonationCaption,
+
                     AddressLine1 = payment.AddressLine1,
                     AddressLine2 = payment.AddressLine2,
                     AddressCity = payment.City,
@@ -124,7 +126,7 @@ namespace Stripe.Controllers
 
             // Add to existing subscriptions and charge 
             var plan = _donationService.GetOrCreatePlan(donation);
-
+           
             var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
             var result = subscriptionService.Create(user.StripeCustomerId, plan.Id);
             if (result != null)
