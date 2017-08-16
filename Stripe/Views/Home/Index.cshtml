@@ -43,9 +43,10 @@
         // script for on change
         $(document).ready(function() {
 
-            $('#DonationAmount').change(function () {
+            $('#DonationAmount').focus(function () {
                 $('li>input[name="SelectedAmount"]').prop('checked', true);
             });
+
         })
 
     </script>
