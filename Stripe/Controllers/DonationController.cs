@@ -29,6 +29,13 @@ namespace Stripe.Controllers
             _stripeSettings = stripeSettings;
         }
 
+        [Route("Donation/Payment")]
+        [HttpGet]
+        public ActionResult payment()
+        {
+            return RedirectToAction("index", "home");
+        }
+
         [Route("Donation/Payment/{id}")]
         public async Task<IActionResult> Payment(int id)
         {
@@ -94,144 +101,149 @@ namespace Stripe.Controllers
         [HttpPost]
         public async Task<IActionResult> Payment(CustomerPaymentViewModel payment)
         {
-            var user = await GetCurrentUserAsync();
-            // Can be better
-            if ((payment.ExpiryYear + 2000) == DateTime.Now.Year && payment.ExpiryMonth <= DateTime.Now.Month)
-                ModelState.AddModelError("expiredCard", "Expired card");
-
-            if (!ModelState.IsValid)
+            try
             {
-                return View(payment);
-            }
-
-            var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
-            var donation = _donationService.GetById(payment.DonationId);
-
-            // Construct payment
-            if (string.IsNullOrEmpty(user.StripeCustomerId))
-            {
-                var customer = new StripeCustomerCreateOptions
+                var user = await GetCurrentUserAsync();
+                
+                if (!ModelState.IsValid)
                 {
-                    Email = user.Email,
-                    Description = $"{user.Email} {user.Id}",
-                    SourceCard = new SourceCard
-                    {
-                        Name = payment.Name,
-                        Number = payment.CardNumber,
-                        Cvc = payment.Cvc,
-                        ExpirationMonth = payment.ExpiryMonth,
-                        ExpirationYear = payment.ExpiryYear,
-                        StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
-
-                        Description = DonationCaption,
-
-                        AddressLine1 = payment.AddressLine1,
-                        AddressLine2 = payment.AddressLine2,
-                        AddressCity = payment.City,
-                        AddressState = payment.State,
-                        AddressCountry = payment.Country,
-                        AddressZip = payment.Zip
-                    }
-                };
-
-                var stripeCustomer = customerService.Create(customer);
-                user.StripeCustomerId = stripeCustomer.Id;
-            }
-            else
-            {
-                //Check for existing credit card, if new credit card number is same as exiting credit card then we delete the existing
-                //Credit card information so new card gets generated automatically as default card.
-                var ExistingCustomer = customerService.Get(user.StripeCustomerId);
-
-                if (ExistingCustomer.Sources != null && ExistingCustomer.Sources.TotalCount > 0 && ExistingCustomer.Sources.Data.Any())
-                {
-                    var cardService = new StripeCardService(_stripeSettings.Value.SecretKey);
-                    foreach (var cardSource in ExistingCustomer.Sources.Data)
-                    {
-                        cardService.Delete(user.StripeCustomerId, cardSource.Card.Id);
-                    }
+                    return View(payment);
                 }
 
-                var customer = new StripeCustomerUpdateOptions
+                var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+                var donation = _donationService.GetById(payment.DonationId);
+
+                // Construct payment
+                if (string.IsNullOrEmpty(user.StripeCustomerId))
                 {
-                    SourceCard = new SourceCard
+                    var customer = new StripeCustomerCreateOptions
                     {
-                        Name = payment.Name,
-                        Number = payment.CardNumber,
-                        Cvc = payment.Cvc,
-                        ExpirationMonth = payment.ExpiryMonth,
-                        ExpirationYear = payment.ExpiryYear,
-                        StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
+                        Email = user.Email,
+                        Description = $"{user.Email} {user.Id}",
+                        SourceCard = new SourceCard
+                        {
+                            Name = payment.Name,
+                            Number = payment.CardNumber,
+                            Cvc = payment.Cvc,
+                            ExpirationMonth = payment.ExpiryMonth,
+                            ExpirationYear = payment.ExpiryYear,
+                            StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
+                            Description = DonationCaption,
+                            AddressLine1 = payment.AddressLine1,
+                            AddressLine2 = payment.AddressLine2,
+                            AddressCity = payment.City,
+                            AddressState = payment.State,
+                            AddressCountry = payment.Country,
+                            AddressZip = payment.Zip
+                        }
+                    };
 
-                        Description = DonationCaption,
-
-                        AddressLine1 = payment.AddressLine1,
-                        AddressLine2 = payment.AddressLine2,
-                        AddressCity = payment.City,
-                        AddressState = payment.State,
-                        AddressCountry = payment.Country,
-                        AddressZip = payment.Zip
-                    }
-                };
-
-                var stripeCustomer = customerService.Update(user.StripeCustomerId, customer);
-                user.StripeCustomerId = stripeCustomer.Id;
-            }
-
-            user.FullName = payment.Name;
-            user.AddressLine1 = payment.AddressLine1;
-            user.AddressLine2 = payment.AddressLine2;
-            user.City = payment.City;
-            user.State = payment.State;
-            user.Country = payment.Country;
-            user.Zip = payment.Zip;
-            await _userManager.UpdateAsync(user);
-
-
-            // Add customer to Stripe
-            if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
-            {
-                var model = (DonationViewModel)donation;
-                model.DonationOptions = _donationService.DonationOptions;
-
-                var charges = new StripeChargeService(_stripeSettings.Value.SecretKey);
-
-                // Charge the customer
-                var charge = charges.Create(new StripeChargeCreateOptions
+                    var stripeCustomer = customerService.Create(customer);
+                    user.StripeCustomerId = stripeCustomer.Id;
+                }
+                else
                 {
-                    Amount = model.GetAmount(),
-                    Description = DonationCaption,
-                    Currency = "usd",
-                    CustomerId = user.StripeCustomerId,
-                    //ReceiptEmail = user.Email,
-                    StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
-                });
+                    //Check for existing credit card, if new credit card number is same as exiting credit card then we delete the existing
+                    //Credit card information so new card gets generated automatically as default card.
+                    var ExistingCustomer = customerService.Get(user.StripeCustomerId);
+                    if (ExistingCustomer.Sources != null && ExistingCustomer.Sources.TotalCount > 0 && ExistingCustomer.Sources.Data.Any())
+                    {
+                        var cardService = new StripeCardService(_stripeSettings.Value.SecretKey);
+                        foreach (var cardSource in ExistingCustomer.Sources.Data)
+                        {
+                            cardService.Delete(user.StripeCustomerId, cardSource.Card.Id);
+                        }
+                    }
 
-                if (charge.Paid)
+                    var customer = new StripeCustomerUpdateOptions
+                    {
+                        SourceCard = new SourceCard
+                        {
+                            Name = payment.Name,
+                            Number = payment.CardNumber,
+                            Cvc = payment.Cvc,
+                            ExpirationMonth = payment.ExpiryMonth,
+                            ExpirationYear = payment.ExpiryYear,
+                            StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
+                            Description = DonationCaption,
+                            AddressLine1 = payment.AddressLine1,
+                            AddressLine2 = payment.AddressLine2,
+                            AddressCity = payment.City,
+                            AddressState = payment.State,
+                            AddressCountry = payment.Country,
+                            AddressZip = payment.Zip
+                        }
+                    };
+
+                    var stripeCustomer = customerService.Update(user.StripeCustomerId, customer);
+                    user.StripeCustomerId = stripeCustomer.Id;
+                }
+
+                user.FullName = payment.Name;
+                user.AddressLine1 = payment.AddressLine1;
+                user.AddressLine2 = payment.AddressLine2;
+                user.City = payment.City;
+                user.State = payment.State;
+                user.Country = payment.Country;
+                user.Zip = payment.Zip;
+                await _userManager.UpdateAsync(user);
+
+
+                // Add customer to Stripe
+                if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
+                {
+                    var model = (DonationViewModel)donation;
+                    model.DonationOptions = _donationService.DonationOptions;
+
+                    var charges = new StripeChargeService(_stripeSettings.Value.SecretKey);
+
+                    // Charge the customer
+                    var charge = charges.Create(new StripeChargeCreateOptions
+                    {
+                        Amount = model.GetAmount(),
+                        Description = DonationCaption,
+                        Currency = "usd",
+                        CustomerId = user.StripeCustomerId,
+                        //ReceiptEmail = user.Email,
+                        StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
+                    });
+
+                    if (charge.Paid)
+                    {
+                        var completedMessage = new CompletedViewModel
+                        {
+                            Message = $"Thank you donating {model.GetDisplayAmount()} for the payment {model.GetDescription()} "
+                        };
+                        return View("Thanks", completedMessage);
+                    }
+                    return View("Error");
+                }
+
+                // Add to existing subscriptions and charge 
+                var plan = _donationService.GetOrCreatePlan(donation);
+
+                var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
+                var result = subscriptionService.Create(user.StripeCustomerId, plan.Id);
+                if (result != null)
                 {
                     var completedMessage = new CompletedViewModel
                     {
-                        Message = $"Thank you donating {model.GetDisplayAmount()} for the payment {model.GetDescription()} "
+                        Message = $"You have added a subscription {result.StripePlan.Name} for this donation",
+                        HasSubscriptions = true
                     };
                     return View("Thanks", completedMessage);
                 }
+            }
+            catch (StripeException sex)
+            {
+                ModelState.AddModelError("error", sex.Message);
+                return View(payment);
+            }
+            catch (Exception ex)
+            {
                 return View("Error");
             }
 
-            // Add to existing subscriptions and charge 
-            var plan = _donationService.GetOrCreatePlan(donation);
-
-            var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
-            var result = subscriptionService.Create(user.StripeCustomerId, plan.Id);
-            if (result != null)
-            {
-                var completedMessage = new CompletedViewModel
-                {
-                    Message = $"You have added a subscription {result.StripePlan.Name} for this donation",
-                    HasSubscriptions = true
-                };
-                return View("Thanks", completedMessage);
-            }
             return View("Error");
         }
 
@@ -264,69 +276,82 @@ namespace Stripe.Controllers
         [HttpPost]
         public async Task<IActionResult> RePayment(CustomerRePaymentViewModel payment)
         {
-            var user = await GetCurrentUserAsync();
-
-            if (!ModelState.IsValid)
+            try
             {
-                return View(payment);
-            }
+                var user = await GetCurrentUserAsync();
 
-            var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
-            var donation = _donationService.GetById(payment.DonationId);
-
-            user.FullName = payment.Name;
-            user.AddressLine1 = payment.AddressLine1;
-            user.AddressLine2 = payment.AddressLine2;
-            user.City = payment.City;
-            user.State = payment.State;
-            user.Country = payment.Country;
-            user.Zip = payment.Zip;
-            await _userManager.UpdateAsync(user);
-
-            // Add customer to Stripe
-            if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
-            {
-                var model = (DonationViewModel)donation;
-                model.DonationOptions = _donationService.DonationOptions;
-
-                var charges = new StripeChargeService(_stripeSettings.Value.SecretKey);
-
-                // Charge the customer
-                var charge = charges.Create(new StripeChargeCreateOptions
+                if (!ModelState.IsValid)
                 {
-                    Amount = model.GetAmount(),
-                    Description = DonationCaption,
-                    Currency = "usd",
-                    CustomerId = user.StripeCustomerId,
-                    //ReceiptEmail = user.Email,
-                    StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
-                });
+                    return View(payment);
+                }
 
-                if (charge.Paid)
+                var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+                var donation = _donationService.GetById(payment.DonationId);
+
+                user.FullName = payment.Name;
+                user.AddressLine1 = payment.AddressLine1;
+                user.AddressLine2 = payment.AddressLine2;
+                user.City = payment.City;
+                user.State = payment.State;
+                user.Country = payment.Country;
+                user.Zip = payment.Zip;
+                await _userManager.UpdateAsync(user);
+
+                // Add customer to Stripe
+                if (EnumInfo<PaymentCycle>.GetValue(donation.CycleId) == PaymentCycle.OneOff)
+                {
+                    var model = (DonationViewModel)donation;
+                    model.DonationOptions = _donationService.DonationOptions;
+
+                    var charges = new StripeChargeService(_stripeSettings.Value.SecretKey);
+
+                    // Charge the customer
+                    var charge = charges.Create(new StripeChargeCreateOptions
+                    {
+                        Amount = model.GetAmount(),
+                        Description = DonationCaption,
+                        Currency = "usd",
+                        CustomerId = user.StripeCustomerId,
+                        //ReceiptEmail = user.Email,
+                        StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
+                    });
+
+                    if (charge.Paid)
+                    {
+                        var completedMessage = new CompletedViewModel
+                        {
+                            Message = $"Thank you donating {model.GetDisplayAmount()} for the payment {model.GetDescription()} "
+                        };
+                        return View("Thanks", completedMessage);
+                    }
+                    return View("Error");
+                }
+
+                // Add to existing subscriptions and charge 
+                var plan = _donationService.GetOrCreatePlan(donation);
+
+                var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
+                var result = subscriptionService.Create(user.StripeCustomerId, plan.Id);
+                if (result != null)
                 {
                     var completedMessage = new CompletedViewModel
                     {
-                        Message = $"Thank you donating {model.GetDisplayAmount()} for the payment {model.GetDescription()} "
+                        Message = $"You have added a subscription {result.StripePlan.Name} for this donation",
+                        HasSubscriptions = true
                     };
                     return View("Thanks", completedMessage);
                 }
+            }
+            catch (StripeException sex)
+            {
+                ModelState.AddModelError("error", sex.Message);
+                return View(payment);
+            }
+            catch (Exception ex)
+            {
                 return View("Error");
             }
 
-            // Add to existing subscriptions and charge 
-            var plan = _donationService.GetOrCreatePlan(donation);
-
-            var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
-            var result = subscriptionService.Create(user.StripeCustomerId, plan.Id);
-            if (result != null)
-            {
-                var completedMessage = new CompletedViewModel
-                {
-                    Message = $"You have added a subscription {result.StripePlan.Name} for this donation",
-                    HasSubscriptions = true
-                };
-                return View("Thanks", completedMessage);
-            }
             return View("Error");
         }
 
