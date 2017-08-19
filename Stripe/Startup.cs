@@ -14,6 +14,7 @@ using Stripe.Models;
 using Stripe.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Identity;
 
 namespace Stripe
 {

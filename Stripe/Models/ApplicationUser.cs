@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Stripe.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Stripe.Models
 {
