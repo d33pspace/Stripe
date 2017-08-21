@@ -24,6 +24,7 @@ namespace Stripe.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        private readonly IOptions<StripeSettings> _stripeSettings;
 
         public ManageController(
           UserManager<ApplicationUser> userManager,
@@ -31,7 +32,8 @@ namespace Stripe.Controllers
           //IOptions<IdentityCookieOptions> identityCookieOptions,
           IEmailSender emailSender,
           ISmsSender smsSender,
-          ILoggerFactory loggerFactory)
+          ILoggerFactory loggerFactory,
+          IOptions<StripeSettings> stripeSettings)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -39,6 +41,7 @@ namespace Stripe.Controllers
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<ManageController>();
+            _stripeSettings = stripeSettings;
         }
 
         //
@@ -78,6 +81,20 @@ namespace Stripe.Controllers
                 City = user.City,
                 Country = user.Country
             };
+
+            model.card = new CardViewModel();
+
+            var CustomerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+            StripeCustomer objStripeCustomer = CustomerService.Get(user.StripeCustomerId);
+
+            if (objStripeCustomer.Sources != null && objStripeCustomer.Sources.TotalCount > 0 && objStripeCustomer.Sources.Data.Any())
+            {
+                var cardService = new StripeCardService(_stripeSettings.Value.SecretKey);
+                foreach (var cardSource in objStripeCustomer.Sources.Data)
+                {
+                    model.card.cardId = cardSource.Card.Id;
+                }
+            }
 
             return View(model);
         }
@@ -406,6 +423,24 @@ namespace Stripe.Controllers
                 ViewData["StatusMessage"] = "Saved Profile";
             }
             return RedirectToAction(nameof(Index), "Manage");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateCard(CardViewModel card)
+        {            
+            var user = await GetCurrentUserAsync();
+            if (user != null)
+            {
+                var CardService = new StripeCardService(_stripeSettings.Value.SecretKey);
+                //CardService.UpdateAsync(user.StripeCustomerId,0)
+
+                //await _userManager.UpdateAsync(user);
+
+                ViewData["StatusMessage"] = "Saved Profile";
+            }
+
+            return View(card);
         }
     }
 }

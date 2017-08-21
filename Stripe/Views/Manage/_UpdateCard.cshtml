@@ -1,0 +1,65 @@
+﻿@model Stripe.Models.ManageViewModels.CardViewModel
+<form asp-controller="Manage" asp-action="UpdateCard"
+      method="post" id="card-form" role="form" class="form-horizontal">
+    <fieldset>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input hidden asp-for="cardId" />
+        <div class="form-group">
+            <label class="col-sm-3 control-label" asp-for="Name"></label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" asp-for="Name">
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">            
+            <label class="col-sm-3 control-label" asp-for="ExpiryMonth"></label>
+            <div class="col-sm-9">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <select class="form-control col-sm-2" asp-for="ExpiryMonth">
+                            <option value="01">Jan (01)</option>
+                            <option value="02">Feb (02)</option>
+                            <option value="03">Mar (03)</option>
+                            <option value="04">Apr (04)</option>
+                            <option value="05">May (05)</option>
+                            <option value="06">June (06)</option>
+                            <option value="07">July (07)</option>
+                            <option value="08">Aug (08)</option>
+                            <option value="09">Sep (09)</option>
+                            <option value="10">Oct (10)</option>
+                            <option value="11">Nov (11)</option>
+                            <option value="12">Dec (12)</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-3">
+                        <select class="form-control" asp-for="ExpiryYear">
+                            <option value="17">2017</option>
+                            <option value="18">2018</option>
+                            <option value="19">2019</option>
+                            <option value="20">2020</option>
+                            <option value="21">2021</option>
+                            <option value="22">2022</option>
+                            <option value="23">2023</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="ExpiryMonth" class="text-danger"></span>
+                    <span asp-validation-for="ExpiryYear" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" asp-for="Cvc"></label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" asp-for="Cvc" placeholder="CVC">
+                <span asp-validation-for="Cvc" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </div>
+    </fieldset>
+</form>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
