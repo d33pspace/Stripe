@@ -93,6 +93,7 @@ namespace Stripe.Controllers
                 foreach (var cardSource in objStripeCustomer.Sources.Data)
                 {
                     model.card.cardId = cardSource.Card.Id;
+                    model.card.Last4Digit = cardSource.Card.Last4;
                 }
             }
 
@@ -427,20 +428,40 @@ namespace Stripe.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateCard(CardViewModel card)
-        {            
+        public async Task<JsonResult> UpdateCard(CardViewModel card)
+        {
+            ResultModel result = new ResultModel();
             var user = await GetCurrentUserAsync();
             if (user != null)
             {
-                var CardService = new StripeCardService(_stripeSettings.Value.SecretKey);
-                //CardService.UpdateAsync(user.StripeCustomerId,0)
+                try
+                {
+                    var CardService = new StripeCardService(_stripeSettings.Value.SecretKey);
+                    StripeCard objStripeCard = await CardService.GetAsync(user.StripeCustomerId, card.cardId);
 
-                //await _userManager.UpdateAsync(user);
-
-                ViewData["StatusMessage"] = "Saved Profile";
+                    StripeCardUpdateOptions updateCardOptions = new StripeCardUpdateOptions();
+                    updateCardOptions.Name = card.Name;
+                    updateCardOptions.ExpirationMonth = card.ExpiryMonth;
+                    updateCardOptions.ExpirationYear = card.ExpiryYear;
+                    
+                    await CardService.UpdateAsync(user.StripeCustomerId, card.cardId, updateCardOptions);
+                    result.data = "Card updated successfully";
+                    result.status = "1";
+                    return Json(result);
+                }
+                catch (StripeException ex1)
+                {
+                    result.data = ex1.Message;
+                    result.status = "0";
+                }
+                catch (Exception ex)
+                {
+                    result.data = "Something went wrong, please try again";
+                    result.status = "0";                    
+                }
             }
 
-            return View(card);
+            return Json(result);
         }
     }
 }

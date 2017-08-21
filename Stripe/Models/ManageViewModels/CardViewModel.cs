@@ -10,6 +10,8 @@ namespace Stripe.Models.ManageViewModels
     {
         public string cardId { get; set; }
 
+        public string Last4Digit { get; set; }
+
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
 
