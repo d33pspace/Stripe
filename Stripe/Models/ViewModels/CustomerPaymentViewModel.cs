@@ -55,5 +55,8 @@ namespace Stripe.Models
         public string Description { get; set; }
 
         public int Amount { get; set; }
+
+        [Required]
+        public string Currency { get; set; }
     }
 }

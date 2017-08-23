@@ -51,7 +51,7 @@ namespace Stripe.Controllers
                 var CustomerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
                 StripeCustomer objStripeCustomer = CustomerService.Get(user.StripeCustomerId);
                 StripeCard objStripeCard = null;
-
+                
                 if (objStripeCustomer.Sources != null && objStripeCustomer.Sources.TotalCount > 0 && objStripeCustomer.Sources.Data.Any())
                 {
                     objStripeCard = objStripeCustomer.Sources.Data.FirstOrDefault().Card;
@@ -73,7 +73,8 @@ namespace Stripe.Controllers
                         Frequency = detail.GetCycle(),
                         Amount = detail.GetDisplayAmount(),
                         Last4Digit = objStripeCard.Last4,
-                        CardId = objStripeCard.Id
+                        CardId = objStripeCard.Id,
+                        Currency = objStripeCustomer.Currency.ToUpper(),
                     };
 
                     return View("RePayment", objCustomerRePaymentViewModel);
@@ -134,7 +135,7 @@ namespace Stripe.Controllers
                             AddressCity = payment.City,
                             AddressState = payment.State,
                             AddressCountry = payment.Country,
-                            AddressZip = payment.Zip
+                            AddressZip = payment.Zip                            
                         }
                     };
 
@@ -202,7 +203,7 @@ namespace Stripe.Controllers
                     {
                         Amount = model.GetAmount(),
                         Description = DonationCaption,
-                        Currency = "usd",
+                        Currency = payment.Currency.ToLower(),
                         CustomerId = user.StripeCustomerId,
                         //ReceiptEmail = user.Email,
                         StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
@@ -220,6 +221,7 @@ namespace Stripe.Controllers
                 }
 
                 // Add to existing subscriptions and charge 
+                donation.currency = payment.Currency;
                 var plan = _donationService.GetOrCreatePlan(donation);
 
                 var subscriptionService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
@@ -310,7 +312,7 @@ namespace Stripe.Controllers
                     {
                         Amount = model.GetAmount(),
                         Description = DonationCaption,
-                        Currency = "usd",
+                        Currency = payment.Currency.ToLower(),
                         CustomerId = user.StripeCustomerId,
                         //ReceiptEmail = user.Email,
                         StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
@@ -326,7 +328,7 @@ namespace Stripe.Controllers
                     }
                     return View("Error");
                 }
-
+                donation.currency = payment.Currency;
                 // Add to existing subscriptions and charge 
                 var plan = _donationService.GetOrCreatePlan(donation);
 
@@ -358,6 +360,8 @@ namespace Stripe.Controllers
         private Task<ApplicationUser> GetCurrentUserAsync()
         {
             return _userManager.GetUserAsync(HttpContext.User);
+            //Source src = new Source();
+            //src.Type = SourceType.
         }
 
     }

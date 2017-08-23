@@ -74,6 +74,7 @@ namespace Stripe.Controllers
                 CycleId = donation.CycleId,
                 DonationAmount = donation.DonationAmount,
                 SelectedAmount = donation.SelectedAmount,
+                currency = "",
                 TransactionDate = DateTime.Now
             };
             _donationService.Save(model);
@@ -105,7 +106,7 @@ namespace Stripe.Controllers
                 Text = b.Value
             }).ToList();
 
-        private Task<ApplicationUser> GetCurrentUserAsync() => 
+        private Task<ApplicationUser> GetCurrentUserAsync() =>
             _userManager.GetUserAsync(HttpContext.User);
     }
 

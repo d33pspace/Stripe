@@ -59,6 +59,7 @@ namespace Stripe.Services
             var cycle = EnumInfo<PaymentCycle>.GetValue(donation.CycleId);
             var frequency = EnumInfo<PaymentCycle>.GetDescription(cycle);
             var amount = donation.DonationAmount ?? 0;
+            string currency = donation.currency;
             if (donation.DonationAmount == null)
             {
                 var model = (DonationViewModel) donation;
@@ -66,7 +67,7 @@ namespace Stripe.Services
 
                 amount = model.GetDisplayAmount();
             }
-            var planName = $"{frequency}_{amount}".ToLower();
+            var planName = $"{frequency}_{amount}_{currency}".ToLower(); //
 
             // Create new plan is this one does not exist
             if (!Exists(planService, planName))
@@ -75,7 +76,7 @@ namespace Stripe.Services
                 {
                     Id = planName,
                     Amount = amount * 100,
-                    Currency = "usd",
+                    Currency = currency.ToLower(),
                     Name = planName, 
                     StatementDescriptor = _stripeSettings.Value.StatementDescriptor
                 };

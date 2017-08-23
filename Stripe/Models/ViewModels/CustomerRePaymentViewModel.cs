@@ -45,5 +45,8 @@ namespace Stripe.Models
 
         public string Last4Digit { get; set; }
         public string CardId { get; set; }
+
+        [Required]
+        public string Currency { get; set; }
     }
 }

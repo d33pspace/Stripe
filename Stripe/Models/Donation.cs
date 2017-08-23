@@ -17,5 +17,7 @@ namespace Stripe.Models
         public DateTime? TransactionDate { get; set; }
 
         public int SelectedAmount { get; set; }
+
+        public string currency { get; set; }
     }
 }
