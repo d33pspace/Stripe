@@ -1,0 +1,15 @@
+﻿@model Stripe.Models.CompletedViewModel
+
+@{
+    ViewBag.Title = "Thank you";
+}
+<div>
+    <h3>@Model.Message</h3>
+</div>
+
+@if (Model.HasSubscriptions)
+{
+    <p>
+        <a asp-controller="Manage" asp-action="Index">See my subscriptions</a>
+    </p>
+}

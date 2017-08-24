@@ -33,7 +33,10 @@
             }
         }
     </ul>
-
+    <ul>
+        <li><input asp-for="PaymentGatway" type="radio" value="stripe" />Stripe</li>
+        <li><input asp-for="PaymentGatway" type="radio" value="alipay" />AliPay</li>
+    </ul>
     <button class="btn btn-success" type="submit">Submit</button>
 </form>
 

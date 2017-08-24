@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Stripe.Models;
 using Stripe.Services;
+using Microsoft.Extensions.Options;
 
 namespace Stripe.Controllers
 {
@@ -17,12 +18,14 @@ namespace Stripe.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IDonationService _donationService;
+        private readonly IOptions<StripeSettings> _stripeSettings;
         const string SessionKey = "sessionKey";
 
-        public HomeController(UserManager<ApplicationUser> userManager, IDonationService donationService)
+        public HomeController(UserManager<ApplicationUser> userManager, IDonationService donationService, IOptions<StripeSettings> stripeSettings)
         {
             _userManager = userManager;
             _donationService = donationService;
+            _stripeSettings = stripeSettings;
         }
 
         public IActionResult Index()
@@ -44,6 +47,47 @@ namespace Stripe.Controllers
                 return RedirectToAction("Payment", "Donation", new { Id = model.Id });
             }
             return NotFound();
+        }
+    
+
+        public string aliPayAuthentication(DonationViewModel donation)
+        {
+            var url = string.Empty;
+            try
+            {
+                StripeConfiguration.SetApiKey(_stripeSettings.Value.SecretKey);
+                var sourceOptions = new StripeSourceCreateOptions()
+                {
+                    Type = StripeSourceType.Alipay,
+                    Amount = 10122,
+                    Currency = "usd",
+                    RedirectReturnUrl = "https://localhost:44341/Home/getAlipayResopnce",
+                    Owner = new StripeSourceOwner()
+                    {
+                        Email = "girishkolte20001@gmail.com"
+                    },
+                    Card = new StripeCreditCardOptions()
+                    {
+                        Name = "GIRISHK",
+                        Number = "5105105105105100",
+                        ExpirationMonth = 12,
+                        ExpirationYear = 2022,
+                        Cvc = "254"
+                    }
+                };
+                ////"http://www.girishkolte.com/response",
+                var sourceService = new StripeSourceService();
+                StripeSource source = sourceService.Create(sourceOptions);
+
+                if (source != null && source.Redirect != null)
+                    url = source.Redirect.Url;
+            }
+            catch (Exception ex)
+            {
+            }
+
+
+            return url;
         }
 
 
@@ -90,7 +134,12 @@ namespace Stripe.Controllers
                 }
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
             }
-            return RedirectToAction("Payment", "Donation", new { id = model.Id });
+            if (donation.PaymentGatway == "stripe")
+                return RedirectToAction("Payment", "Donation", new { id = model.Id });
+            else
+                return RedirectToAction("Payment", "DonationAlipay", new { id = model.Id });
+            //}
+            //return RedirectToAction("Payment", "Donation", new { id = 1 });
         }
 
         public IActionResult Error()

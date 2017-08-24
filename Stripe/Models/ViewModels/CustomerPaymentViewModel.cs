@@ -23,7 +23,7 @@ namespace Stripe.Models
 
         [Range(17, 30, ErrorMessage = "Invalid year")]
         public int ExpiryYear { get; set; }
-        
+
         // Donation attributes
         public int DonationId { get; set; }
         public string CycleId { get; set; }
@@ -58,5 +58,8 @@ namespace Stripe.Models
 
         [Required]
         public string Currency { get; set; }
+
+        public string Paymentgatway { get; set; }
+
     }
 }

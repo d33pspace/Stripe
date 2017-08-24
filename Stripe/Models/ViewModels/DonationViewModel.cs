@@ -22,6 +22,9 @@ namespace Stripe.Models
 
         private const int StripeMultiplier = 100;
 
+        public string PaymentGatway { get; set; }
+
+
         public DonationViewModel()
         {
         }

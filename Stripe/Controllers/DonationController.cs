@@ -49,9 +49,10 @@ namespace Stripe.Controllers
             if (!string.IsNullOrEmpty(user.StripeCustomerId))
             {
                 var CustomerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+
                 StripeCustomer objStripeCustomer = CustomerService.Get(user.StripeCustomerId);
                 StripeCard objStripeCard = null;
-                
+
                 if (objStripeCustomer.Sources != null && objStripeCustomer.Sources.TotalCount > 0 && objStripeCustomer.Sources.Data.Any())
                 {
                     objStripeCard = objStripeCustomer.Sources.Data.FirstOrDefault().Card;
@@ -74,7 +75,7 @@ namespace Stripe.Controllers
                         Amount = detail.GetDisplayAmount(),
                         Last4Digit = objStripeCard.Last4,
                         CardId = objStripeCard.Id,
-                        Currency = objStripeCustomer.Currency.ToUpper(),
+                        Currency = (objStripeCustomer.Currency + "").ToUpper()
                     };
 
                     return View("RePayment", objCustomerRePaymentViewModel);
@@ -105,7 +106,7 @@ namespace Stripe.Controllers
             try
             {
                 var user = await GetCurrentUserAsync();
-                
+
                 if (!ModelState.IsValid)
                 {
                     return View(payment);
@@ -135,7 +136,7 @@ namespace Stripe.Controllers
                             AddressCity = payment.City,
                             AddressState = payment.State,
                             AddressCountry = payment.Country,
-                            AddressZip = payment.Zip                            
+                            AddressZip = payment.Zip
                         }
                     };
 
@@ -146,14 +147,20 @@ namespace Stripe.Controllers
                 {
                     //Check for existing credit card, if new credit card number is same as exiting credit card then we delete the existing
                     //Credit card information so new card gets generated automatically as default card.
-                    var ExistingCustomer = customerService.Get(user.StripeCustomerId);
-                    if (ExistingCustomer.Sources != null && ExistingCustomer.Sources.TotalCount > 0 && ExistingCustomer.Sources.Data.Any())
+                    try
                     {
-                        var cardService = new StripeCardService(_stripeSettings.Value.SecretKey);
-                        foreach (var cardSource in ExistingCustomer.Sources.Data)
+                        var ExistingCustomer = customerService.Get(user.StripeCustomerId);
+                        if (ExistingCustomer.Sources != null && ExistingCustomer.Sources.TotalCount > 0 && ExistingCustomer.Sources.Data.Any())
                         {
-                            cardService.Delete(user.StripeCustomerId, cardSource.Card.Id);
+                            var cardService = new StripeCardService(_stripeSettings.Value.SecretKey);
+                            foreach (var cardSource in ExistingCustomer.Sources.Data)
+                            {
+                                cardService.Delete(user.StripeCustomerId, cardSource.Card.Id);
+                            }
                         }
+                    }
+                    catch (Exception exSub)
+                    {
                     }
 
                     var customer = new StripeCustomerUpdateOptions

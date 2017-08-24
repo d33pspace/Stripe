@@ -29,7 +29,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink.Loader" Version="14.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
-    <PackageReference Include="Stripe.net" Version="10.4.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" />
@@ -38,6 +37,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ViewComponents\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stripe.Core\Stripe.net\Stripe.net.csproj" />
   </ItemGroup>
 
 </Project>

@@ -48,5 +48,7 @@ namespace Stripe.Models
 
         [Required]
         public string Currency { get; set; }
+
+        public string Paymentgatway { get; set; }
     }
 }
