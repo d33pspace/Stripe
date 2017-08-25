@@ -139,7 +139,6 @@ namespace Stripe.Controllers
                             AddressZip = payment.Zip
                         }
                     };
-
                     var stripeCustomer = customerService.Create(customer);
                     user.StripeCustomerId = stripeCustomer.Id;
                 }
@@ -264,6 +263,9 @@ namespace Stripe.Controllers
             var detail = (DonationViewModel)donation;
             detail.DonationOptions = _donationService.DonationOptions;
 
+            var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+            var ExistingCustomer = customerService.Get(user.StripeCustomerId);
+
             var model = new CustomerPaymentViewModel
             {
                 Name = user.FullName,
@@ -276,7 +278,8 @@ namespace Stripe.Controllers
                 DonationId = donation.Id,
                 Description = detail.GetDescription(),
                 Frequency = detail.GetCycle(),
-                Amount = detail.GetDisplayAmount()
+                Amount = detail.GetDisplayAmount(),
+                Currency = string.IsNullOrEmpty(ExistingCustomer.Currency) ? string.Empty : ExistingCustomer.Currency.ToUpper()
             };
 
             return View("Payment", model);

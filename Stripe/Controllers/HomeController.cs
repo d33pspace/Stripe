@@ -134,12 +134,13 @@ namespace Stripe.Controllers
                 }
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.Path });
             }
-            if (donation.PaymentGatway == "stripe")
-                return RedirectToAction("Payment", "Donation", new { id = model.Id });
-            else
-                return RedirectToAction("Payment", "DonationAlipay", new { id = model.Id });
+            //if (donation.PaymentGatway == "stripe")
+            //    return RedirectToAction("Payment", "Donation", new { id = model.Id });
+            //else
+            //    return RedirectToAction("Payment", "DonationAlipay", new { id = model.Id });
             //}
-            //return RedirectToAction("Payment", "Donation", new { id = 1 });
+
+            return RedirectToAction("Payment", "Donation", new { id = model.Id });
         }
 
         public IActionResult Error()
