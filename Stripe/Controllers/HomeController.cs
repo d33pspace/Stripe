@@ -58,7 +58,7 @@ namespace Stripe.Controllers
                 StripeConfiguration.SetApiKey(_stripeSettings.Value.SecretKey);
                 var sourceOptions = new StripeSourceCreateOptions()
                 {
-                    Type = StripeSourceType.Alipay,
+                    //Type = StripeSourceType.Alipay,
                     Amount = 10122,
                     Currency = "usd",
                     RedirectReturnUrl = "https://localhost:44341/Home/getAlipayResopnce",

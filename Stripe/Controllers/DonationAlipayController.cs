@@ -420,7 +420,7 @@ namespace Stripe.Controllers
                 StripeConfiguration.SetApiKey(_stripeSettings.Value.SecretKey);
                 var sourceOptions = new StripeSourceCreateOptions()
                 {
-                    Type = StripeSourceType.Alipay,
+                    //Type = StripeSourceType.Alipay,
                     Amount = donation.GetAmount(),
                     Currency = currency,
                     RedirectReturnUrl = "https://localhost:44341/DonationAlipay/getAlipayResopnce?dnId=" + donation.Id + "&currId=" + currency,
