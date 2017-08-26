@@ -4,9 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81;</PackageTargetFallback>
-  </PropertyGroup>
+
 
   <PropertyGroup>
     <UserSecretsId>aspnet-Stripe2-3805dce7-e9b3-431c-9b52-f16eca1abbaf</UserSecretsId>
