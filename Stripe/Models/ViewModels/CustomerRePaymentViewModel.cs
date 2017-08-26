@@ -50,5 +50,7 @@ namespace Stripe.Models
         public string Currency { get; set; }
 
         public string Paymentgatway { get; set; }
+
+        public string DisableCurrencySelection { get; set; }
     }
 }

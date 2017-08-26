@@ -9,14 +9,13 @@
 <h3>@ViewData["Message"]</h3>
 
 <form asp-controller="Home" asp-action="Create">
-    
+
     <div asp-validation-summary="All" class="text-danger"></div>
 
     <p>I would like to make a </p>
 
     <select asp-for="CycleId"
-            asp-items="@Model.DonationCycles">
-    </select>
+            asp-items="@Model.DonationCycles"></select>
 
     gift of:
 
@@ -25,35 +24,43 @@
         {
             if (donation.IsCustom)
             {
-                <li><input asp-for="SelectedAmount" type="radio" value="@donation.Id" /> <input asp-for="DonationAmount"/> @donation.Reason</li>
+                <li><input asp-for="SelectedAmount" type="radio" value="@donation.Id"/> <input asp-for="DonationAmount" /> @donation.Reason</li>
             }
             else
             {
-                <li> <input asp-for="SelectedAmount" type="radio" value="@donation.Id" /> @donation.Amount @donation.Reason</li>
+                if (donation.Id == 1)
+                {
+                    <li> <input asp-for="SelectedAmount" type="radio" value="@donation.Id" checked="checked" /> @donation.Amount @donation.Reason</li>
+                }
+                else
+                {
+                    <li> <input asp-for="SelectedAmount" type="radio" value="@donation.Id" /> @donation.Amount @donation.Reason</li>
+                }
+
             }
         }
     </ul>
     @*<ul>
-        <li><input asp-for="PaymentGatway" type="radio" value="stripe" />Stripe</li>
-        <li><input asp-for="PaymentGatway" type="radio" value="alipay" />AliPay</li>
-    </ul>*@
+            <li><input asp-for="PaymentGatway" type="radio" value="stripe" />Stripe</li>
+            <li><input asp-for="PaymentGatway" type="radio" value="alipay" />AliPay</li>
+        </ul>*@
     <button class="btn btn-success" type="submit">Submit</button>
 </form>
 
 @section Scripts
-{
+    {
     <script language="javascript">
         // script for on change
-        $(document).ready(function() {
+        $(document).ready(function () {
 
-            $('#DonationAmount').focus(function() {
+            $('#DonationAmount').focus(function () {
                 $('li>input[name="SelectedAmount"]').prop('checked', true);
             });
 
             $('li:last-child>input:radio[name="SelectedAmount"]')
                 .change(function () {
                     $('li>input').focus();
-            });
+                });
 
         })
 

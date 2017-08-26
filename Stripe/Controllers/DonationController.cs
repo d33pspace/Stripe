@@ -75,7 +75,9 @@ namespace Stripe.Controllers
                         Amount = detail.GetDisplayAmount(),
                         Last4Digit = objStripeCard.Last4,
                         CardId = objStripeCard.Id,
-                        Currency = (objStripeCustomer.Currency + "").ToUpper()
+                        Currency = (objStripeCustomer.Currency + "").ToUpper(),
+                        DisableCurrencySelection = string.IsNullOrEmpty(objStripeCustomer.Currency) ? "0" : "1"
+
                     };
 
                     return View("RePayment", objCustomerRePaymentViewModel);
@@ -89,12 +91,13 @@ namespace Stripe.Controllers
                 AddressLine2 = user.AddressLine2,
                 City = user.City,
                 State = user.State,
-                Country = user.Country,
+                Country = string.IsNullOrEmpty(user.Country) ? "US" : user.Country,
                 Zip = user.Zip,
                 DonationId = donation.Id,
                 Description = detail.GetDescription(),
                 Frequency = detail.GetCycle(),
-                Amount = detail.GetDisplayAmount()
+                Amount = detail.GetDisplayAmount(),
+                Currency = "USD"
             };
 
             return View("Payment", model);
@@ -279,7 +282,8 @@ namespace Stripe.Controllers
                 Description = detail.GetDescription(),
                 Frequency = detail.GetCycle(),
                 Amount = detail.GetDisplayAmount(),
-                Currency = string.IsNullOrEmpty(ExistingCustomer.Currency) ? string.Empty : ExistingCustomer.Currency.ToUpper()
+                Currency = string.IsNullOrEmpty(ExistingCustomer.Currency) ? string.Empty : ExistingCustomer.Currency.ToUpper(),
+                DisableCurrencySelection = "1" // Disable currency selection for already created customer as stripe only allow same currency for one customer
             };
 
             return View("Payment", model);

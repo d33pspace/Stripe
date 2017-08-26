@@ -67,7 +67,7 @@
                 <label class="col-sm-3 control-label" asp-for="Country"></label>
                 <div class="col-sm-9">
                     <select asp-for="Country" class="form-control">
-                        <option value="" selected="selected">(please select a country)</option>
+                        <option value="">(please select a country)</option>
                         <option value="AF">Afghanistan</option>
                         <option value="AL">Albania</option>
                         <option value="DZ">Algeria</option>
@@ -292,7 +292,7 @@
                         <option value="UA">Ukraine</option>
                         <option value="AE">United Arab Emirates</option>
                         <option value="GB">United Kingdom</option>
-                        <option value="US">United States</option>
+                        <option value="US" selected="selected">United States</option>
                         <option value="UM">United States Minor Outlying Islands</option>
                         <option value="UY">Uruguay</option>
                         <option value="UZ">Uzbekistan</option>
@@ -363,10 +363,11 @@
             <div class="form-group">
                 <label class="col-sm-3 control-label" asp-for="Currency"></label>
                 <div class="col-sm-3">
-                    @if (!string.IsNullOrEmpty(Model.Currency))
+                    @Html.HiddenFor(model => model.Currency)
+                    @if (!string.IsNullOrEmpty(Model.Currency) && Model.DisableCurrencySelection == "1")
                     {
-                        <select class="form-control col-sm-2" asp-for="Currency" disabled="disabled">
-                            <option value="" selected="selected">(please select a currency)</option>
+                        <select id="ddlCurrency" class="form-control col-sm-2" onchange="SetCurrency(this);" disabled="disabled">
+                            <option value="">(please select a currency)</option>
                             <option value="AFN">Afghan Afghani</option>
                             <option value="ALL">Albanian Lek</option>
                             <option value="DZD">Algerian Dinar</option>
@@ -495,7 +496,7 @@
                             <option value="UGX">Ugandan Shilling</option>
                             <option value="UAH">Ukrainian Hryvnia</option>
                             <option value="AED">United Arab Emirates Dirham</option>
-                            <option value="USD">United States Dollar</option>
+                            <option value="USD" selected="selected">United States Dollar</option>
                             <option value="UYU">Uruguayan Peso</option>
                             <option value="UZS">Uzbekistani Som</option>
                             <option value="VUV">Vanuatu Vatu,</option>
@@ -508,8 +509,8 @@
                     }
                     else
                     {
-                        <select class="form-control col-sm-2" asp-for="Currency">
-                            <option value="" selected="selected">(please select a currency)</option>
+                        <select id="ddlCurrency" class="form-control col-sm-2" onchange="SetCurrency(this);">
+                            <option value="">(please select a currency)</option>
                             <option value="AFN">Afghan Afghani</option>
                             <option value="ALL">Albanian Lek</option>
                             <option value="DZD">Algerian Dinar</option>
@@ -638,7 +639,7 @@
                             <option value="UGX">Ugandan Shilling</option>
                             <option value="UAH">Ukrainian Hryvnia</option>
                             <option value="AED">United Arab Emirates Dirham</option>
-                            <option value="USD">United States Dollar</option>
+                            <option value="USD" selected="selected">United States Dollar</option>
                             <option value="UYU">Uruguayan Peso</option>
                             <option value="UZS">Uzbekistani Som</option>
                             <option value="VUV">Vanuatu Vatu,</option>
@@ -660,3 +661,14 @@
         </fieldset>
     </form>
 </div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#ddlCurrency").val($("#Currency").val());
+    });
+
+    function SetCurrency(item) {        
+        $("#Currency").val($(item).val());
+    }
+</script>

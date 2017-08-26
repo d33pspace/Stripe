@@ -61,5 +61,7 @@ namespace Stripe.Models
 
         public string Paymentgatway { get; set; }
 
+        public string DisableCurrencySelection { get; set; }
+
     }
 }
