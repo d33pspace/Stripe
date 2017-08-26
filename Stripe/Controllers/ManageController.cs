@@ -83,18 +83,29 @@ namespace Stripe.Controllers
             };
 
             model.card = new CardViewModel();
+            model.card.Name = user.FullName;
 
-            var CustomerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
-            StripeCustomer objStripeCustomer = CustomerService.Get(user.StripeCustomerId);
-
-            if (objStripeCustomer.Sources != null && objStripeCustomer.Sources.TotalCount > 0 && objStripeCustomer.Sources.Data.Any())
+            try
             {
-                var cardService = new StripeCardService(_stripeSettings.Value.SecretKey);
-                foreach (var cardSource in objStripeCustomer.Sources.Data)
+                var CustomerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+                if (!string.IsNullOrEmpty(user.StripeCustomerId))
                 {
-                    model.card.cardId = cardSource.Card.Id;
-                    model.card.Last4Digit = cardSource.Card.Last4;
+                    StripeCustomer objStripeCustomer = CustomerService.Get(user.StripeCustomerId);
+                    if (objStripeCustomer.Sources != null && objStripeCustomer.Sources.TotalCount > 0 && objStripeCustomer.Sources.Data.Any())
+                    {
+                        var cardService = new StripeCardService(_stripeSettings.Value.SecretKey);
+                        foreach (var cardSource in objStripeCustomer.Sources.Data)
+                        {
+                            model.card.Name = cardSource.Card.Name;
+                            model.card.cardId = cardSource.Card.Id;
+                            model.card.Last4Digit = cardSource.Card.Last4;
+                        }
+                    }
                 }
+            }
+            catch (StripeException sex)
+            {
+                ModelState.AddModelError("CustomerNoFound", sex.Message);
             }
 
             return View(model);
@@ -406,24 +417,35 @@ namespace Stripe.Controllers
         // POST: /Manage/RemoveLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveProfile(IndexViewModel profile)
+        public async Task<JsonResult> SaveProfile(IndexViewModel profile)
         {
-            var user = await GetCurrentUserAsync();
-            if (user != null)
+            ResultModel result = new ResultModel();
+            try
             {
-                user.FullName = profile.FullName;
-                user.AddressLine1 = profile.AddressLine1;
-                user.AddressLine2 = profile.AddressLine2;
-                user.State = profile.State;
-                user.Zip = profile.Zip;
-                user.City = profile.City;
-                user.Country = profile.Country;
+                var user = await GetCurrentUserAsync();
+                if (user != null)
+                {
+                    user.FullName = profile.FullName;
+                    user.AddressLine1 = profile.AddressLine1;
+                    user.AddressLine2 = profile.AddressLine2;
+                    user.State = profile.State;
+                    user.Zip = profile.Zip;
+                    user.City = profile.City;
+                    user.Country = profile.Country;
 
-                await _userManager.UpdateAsync(user);
+                    await _userManager.UpdateAsync(user);
 
-                ViewData["StatusMessage"] = "Saved Profile";
+                    result.data = "Profile updated successfully";
+                    result.status = "1";
+                }
             }
-            return RedirectToAction(nameof(Index), "Manage");
+            catch (Exception ex)
+            {
+                result.data = "Something went wrong, please try again";
+                result.status = "0";
+            }
+
+            return Json(result);
         }
 
         [HttpPost]
@@ -443,7 +465,7 @@ namespace Stripe.Controllers
                     updateCardOptions.Name = card.Name;
                     updateCardOptions.ExpirationMonth = card.ExpiryMonth;
                     updateCardOptions.ExpirationYear = card.ExpiryYear;
-                    
+
                     await CardService.UpdateAsync(user.StripeCustomerId, card.cardId, updateCardOptions);
                     result.data = "Card updated successfully";
                     result.status = "1";
@@ -457,7 +479,7 @@ namespace Stripe.Controllers
                 catch (Exception ex)
                 {
                     result.data = "Something went wrong, please try again";
-                    result.status = "0";                    
+                    result.status = "0";
                 }
             }
 

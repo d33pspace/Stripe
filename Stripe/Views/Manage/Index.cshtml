@@ -19,6 +19,7 @@
             <div class="widget-header">
                 <i class="fa fa-user"></i>
                 <h3>My Account</h3>
+                <div asp-validation-summary="All" class="text-danger"></div>
             </div> <!-- /widget-header -->
             <div class="widget-content">
                 <div class="tabbable">
@@ -49,8 +50,7 @@
                             <div>
                                 <h4>Change your profile defaults</h4>
                                 <hr />
-                                <form asp-controller="Manage" asp-action="SaveProfile"
-                                      method="post" id="profile-form" role="form">
+                                <form asp-controller="Manage" asp-action="SaveProfile" class="form-horizontal" data-ajax="true" data-ajax-method="POST" data-ajax-success="fun_ProfileSuccess(this,data,xhr);" data-ajax-failure="fun_ProfileFail(this,data,xhr);">
                                     <div class="form-group">
                                         <label asp-for="FullName" class="col-sm-3 control-label"></label>
                                         <div class="col-sm-9">
@@ -424,3 +424,62 @@
         </div> <!-- /widget -->
     </div> <!-- /span9 -->
 </div> <!-- /row -->
+
+<script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+<script type="text/javascript">
+    function fun_ProfileSuccess(ele, data, xhr) {
+        if (data.status == "1") {
+            $.confirm({
+                title: 'success!',
+                content: data.data,
+                type: 'success',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: 'Ok',
+                        btnClass: 'btn-green',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            $.confirm({
+                title: 'error!',
+                content: data.data,
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: 'Try again',
+                        btnClass: 'btn-red',
+                        action: function () {
+                        }
+                    },
+                    close: function () {
+                    }
+                }
+            });
+        }
+    }
+
+    function fun_ProfileFail(data) {
+        $.confirm({
+            title: 'error!',
+            content: 'Something went wrong, please try again.',
+            type: 'red',
+            typeAnimated: true,
+            buttons: {
+                tryAgain: {
+                    text: 'Try again',
+                    btnClass: 'btn-red',
+                    action: function () {
+                    }
+                },
+                close: function () {
+                }
+            }
+        });
+    }
+</script>

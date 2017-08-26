@@ -48,39 +48,45 @@ namespace Stripe.Controllers
             // edit = 1 means user wants to edit the credit card information
             if (!string.IsNullOrEmpty(user.StripeCustomerId))
             {
-                var CustomerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
-
-                StripeCustomer objStripeCustomer = CustomerService.Get(user.StripeCustomerId);
-                StripeCard objStripeCard = null;
-
-                if (objStripeCustomer.Sources != null && objStripeCustomer.Sources.TotalCount > 0 && objStripeCustomer.Sources.Data.Any())
+                try
                 {
-                    objStripeCard = objStripeCustomer.Sources.Data.FirstOrDefault().Card;
-                }
+                    var CustomerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+                    StripeCustomer objStripeCustomer = CustomerService.Get(user.StripeCustomerId);
+                    StripeCard objStripeCard = null;
 
-                if (objStripeCard != null && !string.IsNullOrEmpty(objStripeCard.Id))
-                {
-                    var objCustomerRePaymentViewModel = new CustomerRePaymentViewModel
+                    if (objStripeCustomer.Sources != null && objStripeCustomer.Sources.TotalCount > 0 && objStripeCustomer.Sources.Data.Any())
                     {
-                        Name = user.FullName,
-                        AddressLine1 = user.AddressLine1,
-                        AddressLine2 = user.AddressLine2,
-                        City = user.City,
-                        State = user.State,
-                        Country = user.Country,
-                        Zip = user.Zip,
-                        DonationId = donation.Id,
-                        Description = detail.GetDescription(),
-                        Frequency = detail.GetCycle(),
-                        Amount = detail.GetDisplayAmount(),
-                        Last4Digit = objStripeCard.Last4,
-                        CardId = objStripeCard.Id,
-                        Currency = (objStripeCustomer.Currency + "").ToUpper(),
-                        DisableCurrencySelection = string.IsNullOrEmpty(objStripeCustomer.Currency) ? "0" : "1"
+                        objStripeCard = objStripeCustomer.Sources.Data.FirstOrDefault().Card;
+                    }
 
-                    };
+                    if (objStripeCard != null && !string.IsNullOrEmpty(objStripeCard.Id))
+                    {
+                        var objCustomerRePaymentViewModel = new CustomerRePaymentViewModel
+                        {
+                            Name = user.FullName,
+                            AddressLine1 = user.AddressLine1,
+                            AddressLine2 = user.AddressLine2,
+                            City = user.City,
+                            State = user.State,
+                            Country = user.Country,
+                            Zip = user.Zip,
+                            DonationId = donation.Id,
+                            Description = detail.GetDescription(),
+                            Frequency = detail.GetCycle(),
+                            Amount = detail.GetDisplayAmount(),
+                            Last4Digit = objStripeCard.Last4,
+                            CardId = objStripeCard.Id,
+                            Currency = (objStripeCustomer.Currency + "").ToUpper(),
+                            DisableCurrencySelection = string.IsNullOrEmpty(objStripeCustomer.Currency) ? "0" : "1"
 
-                    return View("RePayment", objCustomerRePaymentViewModel);
+                        };
+
+                        return View("RePayment", objCustomerRePaymentViewModel);
+                    }
+                }
+                catch (StripeException sex)
+                {
+                    ModelState.AddModelError("CustomerNotFound", sex.Message);
                 }
             }
 
@@ -265,26 +271,33 @@ namespace Stripe.Controllers
             var donation = _donationService.GetById(id);
             var detail = (DonationViewModel)donation;
             detail.DonationOptions = _donationService.DonationOptions;
+            CustomerPaymentViewModel model = new CustomerPaymentViewModel();
 
-            var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
-            var ExistingCustomer = customerService.Get(user.StripeCustomerId);
-
-            var model = new CustomerPaymentViewModel
+            try
             {
-                Name = user.FullName,
-                AddressLine1 = user.AddressLine1,
-                AddressLine2 = user.AddressLine2,
-                City = user.City,
-                State = user.State,
-                Country = user.Country,
-                Zip = user.Zip,
-                DonationId = donation.Id,
-                Description = detail.GetDescription(),
-                Frequency = detail.GetCycle(),
-                Amount = detail.GetDisplayAmount(),
-                Currency = string.IsNullOrEmpty(ExistingCustomer.Currency) ? string.Empty : ExistingCustomer.Currency.ToUpper(),
-                DisableCurrencySelection = "1" // Disable currency selection for already created customer as stripe only allow same currency for one customer
-            };
+                var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+                var ExistingCustomer = customerService.Get(user.StripeCustomerId);
+                model = new CustomerPaymentViewModel
+                {
+                    Name = user.FullName,
+                    AddressLine1 = user.AddressLine1,
+                    AddressLine2 = user.AddressLine2,
+                    City = user.City,
+                    State = user.State,
+                    Country = user.Country,
+                    Zip = user.Zip,
+                    DonationId = donation.Id,
+                    Description = detail.GetDescription(),
+                    Frequency = detail.GetCycle(),
+                    Amount = detail.GetDisplayAmount(),
+                    Currency = string.IsNullOrEmpty(ExistingCustomer.Currency) ? string.Empty : ExistingCustomer.Currency.ToUpper(),
+                    DisableCurrencySelection = "1" // Disable currency selection for already created customer as stripe only allow same currency for one customer
+                };
+            }
+            catch (StripeException sex)
+            {
+                ModelState.AddModelError("CustomerNotFound", sex.Message);
+            }                        
 
             return View("Payment", model);
         }

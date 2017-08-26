@@ -30,28 +30,46 @@ namespace Stripe.ViewComponents
             if (!string.IsNullOrEmpty(user.StripeCustomerId))
             {
                 var customerService = new StripeSubscriptionService(_stripeSettings.Value.SecretKey);
-               var subscriptions = customerService.List(user.StripeCustomerId);
 
-                var customerSubscription = new CustomerPaymentViewModel
+                var StripSubscriptionListOption = new StripeSubscriptionListOptions()
                 {
-                    UserName = user.Email,
-                    Subscriptions = subscriptions.Select(s => new CustomerSubscriptionViewModel
-                    {
-                        Id = s.Id,
-                        Name = s.StripePlan.Name,
-                        Amount = s.StripePlan.Amount,
-                        Currency = s.StripePlan.Currency,
-                        Status = s.Status
-                    }).ToList()
+                    CustomerId = user.StripeCustomerId,
+                    Limit = 100
                 };
+
+                var customerSubscription = new CustomerPaymentViewModel();
+
+                try
+                {
+                    var subscriptions = customerService.List(StripSubscriptionListOption);
+                    customerSubscription = new CustomerPaymentViewModel
+                    {
+                        UserName = user.Email,
+                        Subscriptions = subscriptions.Select(s => new CustomerSubscriptionViewModel
+                        {
+                            Id = s.Id,
+                            Name = s.StripePlan.Name,
+                            Amount = s.StripePlan.Amount,
+                            Currency = s.StripePlan.Currency,
+                            Status = s.Status
+                        }).ToList()
+                    };
+                }
+                catch (StripeException sex)
+                {
+                    ModelState.AddModelError("CustmoerNotFound", sex.Message);
+                }
+
                 return View("View", customerSubscription);
             }
+
             var subscription = new CustomerPaymentViewModel
             {
                 UserName = user.Email,
+
                 Subscriptions = new List<CustomerSubscriptionViewModel>()
             };
-            return View(subscription);
+            return View("View", subscription);
         }
 
         private ApplicationUser GetCurrentUserAsync()
