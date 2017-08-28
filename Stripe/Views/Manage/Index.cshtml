@@ -5,7 +5,7 @@
 
 <h2>@ViewData["Title"].</h2>
 <p class="text-success">@ViewData["StatusMessage"]</p>
-
+<input type="hidden" id="TabId" name="TabId" value="@ViewBag.TabId" />
 @if (Model.Message != null)
 {
     <div class="alert alert-info">
@@ -39,7 +39,14 @@
                             <hr />
                             @if (!string.IsNullOrEmpty(Model.card.cardId))
                             {
-                                @Html.Partial("_UpdateCard", Model.card)
+                                <div class="row">
+                                    <div id="divUpdate">
+                                        @Html.Partial("_UpdateCard", Model.card)
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div id="divAdd" style="display:none;"></div>
+                                </div>
                             }
                             else
                             {
@@ -427,6 +434,11 @@
 
 <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
 <script type="text/javascript">
+    $(document).ready(function () {
+        var tabId = $('#TabId').val();
+        selectedTab(tabId);
+    });
+
     function fun_ProfileSuccess(ele, data, xhr) {
         if (data.status == "1") {
             $.confirm({
@@ -482,4 +494,8 @@
             }
         });
     }
+
+    function selectedTab(selectedTab) {
+        $('#account-tabs li:eq(' + selectedTab + ') a').tab('show');
+    };
 </script>

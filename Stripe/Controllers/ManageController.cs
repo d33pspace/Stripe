@@ -47,7 +47,7 @@ namespace Stripe.Controllers
         //
         // GET: /Manage/Index
         [HttpGet]
-        public async Task<IActionResult> Index(ManageMessageId? message = null)
+        public async Task<IActionResult> Index(ManageMessageId? message = null, int tabId = 0)
         {
             ViewData["StatusMessage"] =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
@@ -107,7 +107,7 @@ namespace Stripe.Controllers
             {
                 ModelState.AddModelError("CustomerNoFound", sex.Message);
             }
-
+            ViewBag.TabId = tabId;
             return View(model);
         }
 
@@ -384,6 +384,12 @@ namespace Stripe.Controllers
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
+        public ActionResult AddNewCard()
+        {
+            NewCardViewModel card = new NewCardViewModel();
+            return PartialView("_AddNewCard", card);
+        }
+
         #region Helpers
 
         private void AddErrors(IdentityResult result)
@@ -468,6 +474,68 @@ namespace Stripe.Controllers
 
                     await CardService.UpdateAsync(user.StripeCustomerId, card.cardId, updateCardOptions);
                     result.data = "Card updated successfully";
+                    result.status = "1";
+                    return Json(result);
+                }
+                catch (StripeException ex1)
+                {
+                    result.data = ex1.Message;
+                    result.status = "0";
+                }
+                catch (Exception ex)
+                {
+                    result.data = "Something went wrong, please try again";
+                    result.status = "0";
+                }
+            }
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> AddNewCard(NewCardViewModel card)
+        {
+            ResultModel result = new ResultModel();
+            var user = await GetCurrentUserAsync();
+            if (user != null)
+            {
+                try
+                {
+                    var customerService = new StripeCustomerService(_stripeSettings.Value.SecretKey);
+                    var ExistingCustomer = customerService.Get(user.StripeCustomerId);
+                    if (ExistingCustomer.Sources != null && ExistingCustomer.Sources.TotalCount > 0 && ExistingCustomer.Sources.Data.Any())
+                    {
+                        var cardService = new StripeCardService(_stripeSettings.Value.SecretKey);
+                        foreach (var cardSource in ExistingCustomer.Sources.Data)
+                        {
+                            cardService.Delete(user.StripeCustomerId, cardSource.Card.Id);
+                        }
+                    }
+
+                    var customer = new StripeCustomerUpdateOptions
+                    {
+                        SourceCard = new SourceCard
+                        {
+                            Name = user.FullName,
+                            Number = card.CardNumber,
+                            Cvc = card.Cvc,
+                            ExpirationMonth = card.ExpiryMonth,
+                            ExpirationYear = card.ExpiryYear,
+                            StatementDescriptor = _stripeSettings.Value.StatementDescriptor,
+                            Description = "",
+                            AddressLine1 = user.AddressLine1,
+                            AddressLine2 = user.AddressLine2,
+                            AddressCity = user.City,
+                            AddressState = user.State,
+                            AddressCountry = user.Country,
+                            AddressZip = user.Zip
+                        }
+                    };
+
+                    var stripeCustomer = customerService.Update(user.StripeCustomerId, customer);
+                    user.StripeCustomerId = stripeCustomer.Id;
+                    result.data = "Card added successfully";
                     result.status = "1";
                     return Json(result);
                 }

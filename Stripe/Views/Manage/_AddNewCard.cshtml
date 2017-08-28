@@ -1,19 +1,19 @@
-﻿@model Stripe.Models.ManageViewModels.CardViewModel
-<form asp-controller="Manage" asp-action="UpdateCard" class="form-horizontal" data-ajax="true" data-ajax-method="POST" data-ajax-success="fun_success(this,data,xhr);" data-ajax-failure="fun_fail(this,data,xhr);">
+﻿@model Stripe.Models.ManageViewModels.NewCardViewModel
+<form asp-controller="Manage" asp-action="AddNewCard" class="form-horizontal" data-ajax="true" data-ajax-method="POST" data-ajax-success="fun_add_success(this,data,xhr);" data-ajax-failure="fun_add_fail(this,data,xhr);">
     <fieldset>
         <div asp-validation-summary="All" class="text-danger"></div>
-        <input hidden asp-for="cardId" />
         <div class="form-group">
-            <label class="col-sm-3 control-label">Card</label>
+            <label class="col-sm-3 control-label" asp-for="CardNumber"></label>
             <div class="col-sm-9">
-                <input type="text" readonly class="form-control" asp-for="Last4Digit" value="****@Model.Last4Digit" />
+                <input type="text" class="form-control" asp-for="CardNumber" placeholder="Debit/Credit Card Number">
+                <span asp-validation-for="CardNumber" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label" asp-for="Name"></label>
-            <div class="col-sm-9">
-                <input type="text" class="form-control" asp-for="Name">
-                <span asp-validation-for="Name" class="text-danger"></span>
+            <label class="col-sm-3 control-label" asp-for="Cvc"></label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" asp-for="Cvc" placeholder="CVC">
+                <span asp-validation-for="Cvc" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -55,13 +55,15 @@
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
                 <input type="submit" value="Save" class="btn btn-success" />
-                <input type="button" value="Delete & Add New Card" class="btn btn-danger" onclick="deleteAddNewCard()" />
+                <input type="button" value="Cancel" class="btn btn-primary" onclick="showEditDetail()" />
             </div>
         </div>
     </fieldset>
 </form>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 <script type="text/javascript">
-    function fun_success(ele, data, xhr) {
+    function fun_add_success(ele, data, xhr) {
         if (data.status == "1") {
             $.confirm({
                 title: 'success!',
@@ -73,9 +75,11 @@
                         text: 'Thank you!',
                         btnClass: 'btn-green',
                         action: function () {
+                            window.location = "/Manage/Index?message=&tabId=1";
                         }
                     },
                     close: function () {
+                        window.location = "/Manage/Index?message=&tabId=1";
                     }
                 }
             });
@@ -100,7 +104,7 @@
         }
     }
 
-    function fun_fail(data) {
+    function fun_add_fail(data) {
         $.confirm({
             title: 'error!',
             content: 'Something went wrong, please try again.',
@@ -117,17 +121,12 @@
                 }
             }
         });
-    }
+    };
 
-    function deleteAddNewCard() {
-        $('#divUpdate').hide();
-        $.ajax({
-            url: "/Manage/AddNewCard",
-            data: {},
-            success: function (result) {
-                $('#divAdd').show();
-                $('#divAdd').html(result);
-            }
-        });
+    function showEditDetail() {
+        $('#divUpdate').show();
+        $('#divAdd').empty();
+        $('#divAdd').hide();
     };
 </script>
+
